@@ -1,141 +1,282 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBottle - Chytrá láhev</title>
-    <meta name="description" content="SmartBottle - chytrá láhev, která sleduje tvou hydrataci.">
-    <style>
-        /* Reset a základní styl */
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
-        body {line-height: 1.6; color: #333; background-color: #f7f7f7;}
-        a {text-decoration: none; color: inherit;}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Lokální pekárna " />
+  <meta name="author" content="Pekárna U Dvora" />
+  <title>Pekárna U Dvora — čerstvé pečivo z místní tradice</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1WQp3r5QqQ8K/6eZ9ZZTtmI3zV9zzTtmI3zV9zzTtmI3" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #b85b3a
+    }
 
-        /* Header */
-        header {background-color: #4CAF50; color: white; padding: 20px 0;}
-        nav {display: flex; justify-content: space-between; align-items: center; width: 90%; margin: auto;}
-        .menu {list-style: none; display: flex; gap: 20px;}
-        .menu li a {color: white; font-weight: bold;}
-        .logo a {font-size: 24px; font-weight: bold; color: white;}
+    .brand {
+      color: var(--brand)
+    }
 
-        /* Hero */
-        .hero {background-color: #e8f5e9; text-align: center; padding: 80px 20px;}
-        .hero h1 {font-size: 48px; margin-bottom: 20px;}
-        .hero p {font-size: 20px; margin-bottom: 30px;}
-        .btn-primary {background-color: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer;}
-        .btn-primary:hover {background-color: #45a049;}
+    .hero {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1542834369-f10ebf06d3cb?auto=format&fit=crop&w=1600&q=60');
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
 
-        /* Features */
-        #features {padding: 60px 20px; background-color: white; text-align: center;}
-        .features-list {display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 40px;}
-        .feature {background-color: #f0f0f0; padding: 30px; border-radius: 10px; width: 250px;}
-        .feature img {width: 100px; margin-bottom: 15px;}
-        .feature h3 {margin-bottom: 10px; color: #4CAF50;}
+    .card-img-top {
+      object-fit: cover;
+      height: 180px
+    }
 
-        /* Reviews */
-        #reviews {padding: 60px 20px; text-align: center;}
-        .reviews {display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 40px;}
-        .review {background-color: #e0f7fa; padding: 20px; border-radius: 10px; width: 300px; font-style: italic;}
+    .nav-link.active {
+      font-weight: 600
+    }
 
-        /* Buy section */
-        #buy {padding: 60px 20px; background-color: #fff3e0; text-align: center;}
-        #buy form {margin-top: 20px;}
-        input[type="number"] {padding: 10px; width: 60px; margin-right: 10px; border-radius: 5px; border: 1px solid #ccc;}
-        button {padding: 10px 20px; border: none; border-radius: 5px; background-color: #ff9800; color: white; font-size: 16px; cursor: pointer;}
-        button:hover {background-color: #e68900;}
+    .card.h-100 {
+      display: flex;
+      flex-direction: column
+    }
 
-        /* Contact */
-        #contact {padding: 60px 20px; background-color: #f0f0f0; text-align: center;}
-        .socials a {margin: 0 10px; color: #4CAF50; font-weight: bold;}
+    .card-body {
+      flex: 1
+    }
 
-        /* Footer */
-        footer {background-color: #333; color: white; text-align: center; padding: 20px;}
-        
-        /* Responsive */
-        @media(max-width: 768px){
-            .features-list, .reviews {flex-direction: column; align-items: center;}
-        }
-    </style>
+    @media (max-width:576px) {
+      .card-img-top {
+        height: 140px
+      }
+    }
+  </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <div class="logo"><a href="#">SmartBottle</a></div>
-            <ul class="menu">
-                <li><a href="#home">Domů</a></li>
-                <li><a href="#features">Funkce</a></li>
-                <li><a href="#reviews">Recenze</a></li>
-                <li><a href="#buy">Koupit</a></li>
-                <li><a href="#contact">Kontakt</a></li>
+
+<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="80" tabindex="0">
+  <nav id="mainNav" class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#top"><img
+          src="https://images.unsplash.com/photo-1527515637466-5f6b9d3f1f6b?auto=format&fit=crop&w=80&q=60" alt="logo"
+          width="40" height="40" class="rounded-circle me-2"> <span class="brand">Pekárna U Dvora</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
+        aria-controls="navContent" aria-expanded="false" aria-label="Přepnout navigaci">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#o-nas">O nás</a></li>
+          <li class="nav-item"><a class="nav-link" href="#produkty">Produkty</a></li>
+          <li class="nav-item"><a class="nav-link" href="#galerie">Galerie</a></li>
+          <li class="nav-item"><a class="nav-link" href="#kontakt">Kontakt</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <header id="top" class="hero py-5">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-7 text-white">
+          <h1 class="display-5 fw-bold">Pekárna U Dvora</h1>
+          <p class="lead">Rodinná pekárna z centra města — čerstvé pečivo denně od rána. Tradiční receptury &amp;
+            lokální suroviny.</p>
+          <p class="mb-4">Otevřeno: Po–Pá 6:00–18:00, So 7:00–13:00</p>
+          <a href="#produkty" class="btn btn-light btn-lg me-2">Naše produkty</a>
+          <a href="#kontakt" class="btn btn-outline-light btn-lg">Kontakt</a>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+          <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=800&q=60"
+            alt="čerstvé pečivo" class="img-fluid rounded shadow-lg">
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="py-5">
+    <div class="container">
+      <section id="o-nas" class="mb-5">
+        <div class="row g-4 align-items-center">
+          <div class="col-md-6">
+            <h2>O nás</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum, lorem a varius dictum, nisl arcu
+              facilisis ipsum, vitae interdum ipsum arcu sed purus. Naše pekárna peče s láskou a respektem k tradiční
+              receptuře.</p>
+            <ul>
+              <li>Tradiční řemeslné pečení</li>
+              <li>Lokální suroviny</li>
+              <li>Možnost předobjednávky a catering</li>
             </ul>
-        </nav>
-    </header>
-
-    <section id="home" class="hero">
-        <h1>SmartBottle</h1>
-        <p>Chytrá láhev, která sleduje tvou hydrataci a motivuje tě pít více vody.</p>
-        <a href="#buy" class="btn-primary">Koupit nyní</a>
-        <div style="margin-top: 40px;">
-            <img src="https://via.placeholder.com/400x300" alt="SmartBottle" style="border-radius: 20px;">
+            <a href="#kontakt" class="btn btn-primary">Objednat / zeptat se</a>
+          </div>
+          <div class="col-md-6">
+            <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=60"
+              alt="pekárna interiér" class="img-fluid rounded">
+          </div>
         </div>
-    </section>
-
-    <section id="features">
-        <h2>Funkce SmartBottle</h2>
-        <div class="features-list">
-            <div class="feature">
-                <img src="https://via.placeholder.com/100" alt="Funkce 1">
-                <h3>Hydratace na míru</h3>
-                <p>Láhev sleduje tvůj pitný režim a připomíná, kdy doplnit vodu.</p>
+      </section>
+      <section id="produkty" class="mb-5">
+        <h2>Produkty</h2>
+        <p class="text-muted">Ukázka různých kategorií — každá karta má stejnou výšku (h-100) a je responzivní.</p>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <img src="https://images.unsplash.com/photo-1604909053134-5e4b2b8f0b3c?auto=format&fit=crop&w=800&q=60"
+                class="card-img-top" alt="chléb">
+              <div class="card-body">
+                <h5 class="card-title">Domácí chléb</h5>
+                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia.</p>
+              </div>
+              <div class="card-footer bg-transparent border-0">
+                <a href="#" class="btn btn-outline-primary">Více</a>
+              </div>
             </div>
-            <div class="feature">
-                <img src="https://via.placeholder.com/100" alt="Funkce 2">
-                <h3>Čistá a čerstvá voda</h3>
-                <p>Integrovaný filtr udržuje vodu čistou a chutnou po celý den.</p>
+          </div>
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <img src="https://images.unsplash.com/photo-1612874745107-5d8a4b2f9f0f?auto=format&fit=crop&w=800&q=60"
+                class="card-img-top" alt="rohlíky">
+              <div class="card-body">
+                <h5 class="card-title">Pečivo</h5>
+                <p class="card-text">Suspendisse potenti. Integer sed lectus quis neque posuere malesuada.</p>
+              </div>
+              <div class="card-footer bg-transparent border-0">
+                <a href="#" class="btn btn-outline-primary">Více</a>
+              </div>
             </div>
-            <div class="feature">
-                <img src="https://via.placeholder.com/100" alt="Funkce 3">
-                <h3>Chytrá aplikace</h3>
-                <p>Synchronizace s telefonem pro přehled o pitném režimu a cílech.</p>
+          </div>
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=60"
+                class="card-img-top" alt="dezerty">
+              <div class="card-body">
+                <h5 class="card-title">Dezerty & sladkosti</h5>
+                <p class="card-text">Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>
+              </div>
+              <div class="card-footer bg-transparent border-0">
+                <a href="#" class="btn btn-outline-primary">Více</a>
+              </div>
             </div>
+          </div>
         </div>
-    </section>
-
-    <section id="reviews">
-        <h2>Co říkají naši zákazníci</h2>
-        <div class="reviews">
-            <div class="review">
-                "Skvělá láhev! Pomáhá mi pít více vody každý den." – Jana K.
+      </section>
+      <section id="galerie" class="mb-5">
+        <h2>Galerie</h2>
+        <div id="carouselExampleIndicators" class="carousel slide shadow-sm rounded" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+              aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+              aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+              aria-label="Slide 3"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=60"
+                class="d-block w-100" alt="pečení 1">
             </div>
-            <div class="review">
-                "Praktická a chytrá, doporučuji všem." – Petr S.
+            <div class="carousel-item">
+              <img src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=60"
+                class="d-block w-100" alt="pečení 2">
             </div>
+            <div class="carousel-item">
+              <img src="https://images.unsplash.com/photo-1511689660979-1a1b4d9d7f0a?auto=format&fit=crop&w=1400&q=60"
+                class="d-block w-100" alt="pečení 3">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Předchozí</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Další</span>
+          </button>
         </div>
-    </section>
-
-    <section id="buy">
-        <h2>Koupit SmartBottle</h2>
-        <p>Cena: 799 Kč</p>
-        <form>
-            <input type="number" id="quantity" name="quantity" min="1" value="1">
-            <button type="submit">Přidat do košíku</button>
-        </form>
-        <div style="margin-top: 30px;">
-            <img src="https://via.placeholder.com/300x200" alt="SmartBottle k prodeji" style="border-radius: 15px;">
+      </section>
+      <section id="multimedia" class="mb-5">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <h2>Video</h2>
+            <p class="text-muted">Krátké video z naší pekárny.</p>
+            <div class="ratio ratio-16x9 shadow-sm rounded">
+              <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <h2>Mapa</h2>
+            <p class="text-muted">Najdete nás v centru — přijďte na čerstvé pečivo.</p>
+            <div class="ratio ratio-4x3 shadow-sm rounded">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12608.123456789012!2d14.414!3d50.087!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDA1JzAwLjAiTiAxNMKwMjQnMDAuMCJF!5e0!3m2!1scs!2scz!4v0000000000000"
+                style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </div>
         </div>
-    </section>
-
-    <section id="contact">
-        <h2>Kontakt</h2>
-        <p>Email: info@smartbottle.cz</p>
-        <p>Telefon: +420 123 456 789</p>
-        <div class="socials">
-            <a href="#">Facebook</a> | <a href="#">Instagram</a>
+      </section>
+      <section id="kontakt" class="mb-5">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h2>Kontakt</h2>
+            <p>Adresa: Hlavní 12, 110 00 Město</p>
+            <p>Telefon: <a href="tel:+420123456789">+420 123 456 789</a></p>
+            <p>Email: <a href="mailto:info@pekarna-udvora.cz">info@pekarna-udvora.cz</a></p>
+            <h3 class="mt-4">Otevírací doba</h3>
+            <ul>
+              <li>Pondělí–Pátek: 6:00–18:00</li>
+              <li>Sobota: 7:00–13:00</li>
+              <li>Neděle: zavřeno</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h2>Přihlásit k odběru</h2>
+            <p class="text-muted">Zadejte svůj e-mail a my vám pošleme speciální nabídky a novinky.</p>
+            <form class="row g-2"
+              onsubmit="event.preventDefault(); alert('Děkujeme — e-mail byl zaregistrován (demo).');">
+              <div class="col-sm-8">
+                <label for="email" class="visually-hidden">E-mail</label>
+                <input type="email" class="form-control" id="email" placeholder="vaše@email.cz" required>
+              </div>
+              <div class="col-sm-4 d-grid">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-fill me-1"></i>Přihlásit</button>
+              </div>
+            </form>
+            <hr>
+            <h3 class="mt-3">Rychlý kontakt</h3>
+            <form>
+              <div class="mb-2">
+                <label for="name" class="form-label">Jméno</label>
+                <input type="text" class="form-control" id="name" placeholder="Vaše jméno">
+              </div>
+              <div class="mb-2">
+                <label for="message" class="form-label">Zpráva</label>
+                <textarea class="form-control" id="message" rows="3" placeholder="Chci si objednat..."></textarea>
+              </div>
+              <button class="btn btn-outline-secondary" type="submit">Odeslat</button>
+            </form>
+          </div>
         </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 SmartBottle. Všechna práva vyhrazena.</p>
-    </footer>
+      </section>
+    </div>
+  </main>
+  <footer class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 class="brand">Pekárna U Dvora</h5>
+          <p class="small">© 2025 Pekárna U Dvora — Všechny práva vyhrazena.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <a href="#top" class="text-white me-3">Nahoru <i class="bi bi-arrow-up"></i></a>
+          <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-pp3zV5kQ6r8+qv6g6Qv6g6Qv6g6Qv6g6" crossorigin="anonymous"></script>
 </body>
+
 </html>
