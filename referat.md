@@ -9,6 +9,7 @@ Kahn působil v rámci americké agentury ARPA (později DARPA), kde vedl projek
 
 Na rozdíl od některých jiných vynálezců nebyla jeho práce dlouho veřejně známá, přestože její dopad na současnou digitální společnost je zásadní. V pozdějších letech spoluzaložil organizaci CNRI (Corporation for National Research Initiatives), kde se věnoval dalšímu výzkumu a vývoji v oblasti internetové infrastruktury.
 Za svůj přínos obdržel řadu ocenění, včetně Prezidentské medaile svobody a Turingovy ceny. Přesto zůstává ve veřejném povědomí méně známým jménem než někteří jiní průkopníci digitální éry.
+
 Zdroje:
 - https://en.wikipedia.org/wiki/Robert_Kahn
 - https://en.wikipedia.org/wiki/TCP/IP
