@@ -1,6 +1,3 @@
-# 2024 WT holecek
-
-
 # Robert Elliot Kahn
 ![Robert Elliot KAhn](https://engineering.purdue.edu/Engr/AboutUs/News/Events/DistinguishedLectures/2017-2018/kahn-lecture/5RobertKahn-DistinguishedLecture-300x400.png/alter?width=150&height=200)
 
@@ -11,6 +8,7 @@ Na rozdíl od některých jiných vynálezců nebyla jeho práce dlouho veřejn�
 Za svůj přínos obdržel řadu ocenění, včetně Prezidentské medaile svobody a Turingovy ceny. Přesto zůstává ve veřejném povědomí méně známým jménem než někteří jiní průkopníci digitální éry.
 
 Zdroje:
+
 - https://en.wikipedia.org/wiki/Robert_Kahn
 - https://en.wikipedia.org/wiki/TCP/IP
 - https://en.wikipedia.org/wiki/Corporation_for_National_Research_Initiatives
