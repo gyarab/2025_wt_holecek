@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "pass wallet demo",
+  "version": "1.2",
+  "description": "pass demo",
+  "icons": {
+    "48": "icons/icon_demo.png",
+    "96": "icons/icon_demo.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon_demo.png"
+    },
+    "default_title": "pass wallet demo"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["storage", "activeTab"]
+}
