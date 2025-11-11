@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pass wallet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>moje hesla</h2>
+  <div id="addBox">
+    <input type="text" id="webInput" placeholder="web">
+    <input type="text" id="userInput" placeholder="user">
+    <input type="password" id="passInput" placeholder="heslo">
+    <input type="text" id="noteInput" placeholder="poznamka">
+    <button id="addBtn">add</button>
+  </div>
+  <div id="listBox">
+    <h3>sawed ucty</h3>
+    <p id="noItems">nothing here</p>
+    <ul id="list"></ul>
+  </div>
+  <div id="editBox" class="hidden">
+    <div class="inner">
+      <h4>upravit polozku</h4>
+      <input type="text" id="editWeb" disabled>
+      <input type="text" id="editUser">
+      <input type="password" id="editPass">
+      <input type="text" id="editNote">
+      <div class="btns">
+        <button id="saveBtn">save</button>
+        <button id="deleteBtn">delete</button>
+        <button id="closeBtn">close</button>
+      </div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>
