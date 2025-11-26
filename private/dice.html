@@ -11,11 +11,24 @@
         #dice { font-size: 250px; color: #2c3e50; user-select: none; margin-bottom: 20px; }
         
         /* Button Styling */
-        #roll-btn { padding: 20px 60px; font-size: 24px; font-weight: bold; background-color: #3498db; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px #2980b9; transition: transform 0.1s; }
-        #roll-btn:active { transform: translateY(4px); box-shadow: 0 2px #2980b9; }
+        #roll-btn { 
+            padding: 20px 60px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 6px #2980b9; 
+            transition: transform 0.1s; 
+        }
+        #roll-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 2px #2980b9; 
+        }
         
-        /* The Secret Dot (Top Right Corner) */
-        #status { position: absolute; top: 20px; right: 20px; width: 15px; height: 15px; border-radius: 50%; background-color: #e74c3c; transition: background-color 0.5s; }
+        /* Removed the #status CSS */
         
         /* Animation */
         .shake { animation: shake 0.5s linear; }
@@ -23,10 +36,8 @@
     </style>
 </head>
 <body>
-    <div id="status" title="Connection Status"></div>
-    
     <div id="dice">&#9856;</div>
-    <button id="roll-btn" onclick="rollDice()">ROLL DICE</button>
+    <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
 
     <script>
         // --- PASTE KEYS HERE ---
@@ -38,14 +49,22 @@
         const channel = 'magic_dice_channel';
         let forcedOutcome = 0;
 
+        // Get the button element
+        const rollButton = document.getElementById('roll-btn');
+
         // Listen for the secret signal
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
-                // If connected, turn the dot green
+                // --- MODIFIED CODE FOR BUTTON TEXT ---
                 if(s.category === "PNConnectedCategory") {
-                    document.getElementById('status').style.backgroundColor = "#2ecc71"; 
+                    // Set to Czech when connected
+                    rollButton.textContent = "Roztocit Kostku"; 
+                } else {
+                    // Set to English when not connected/connecting
+                    rollButton.textContent = "Roll Dice";
                 }
+                // --- END MODIFIED CODE ---
             },
             message: function(m) { 
                 // Receive the cheat code
