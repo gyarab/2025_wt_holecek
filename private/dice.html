@@ -28,8 +28,6 @@
             box-shadow: 0 2px #2980b9; 
         }
         
-        /* Removed the #status CSS */
-        
         /* Animation */
         .shake { animation: shake 0.5s linear; }
         @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
@@ -48,23 +46,41 @@
         });
         const channel = 'magic_dice_channel';
         let forcedOutcome = 0;
+        
+        // Track the last rolled number to prevent immediate repetition
+        let lastRolledNumber = 0; 
+        let isConnected = false;
 
         // Get the button element
         const rollButton = document.getElementById('roll-btn');
 
-        // Listen for the secret signal
+        // --- CONNECTION MANAGEMENT (1-SECOND RETRY) ---
+
+        function checkConnectionAndReconnect() {
+            if (!isConnected) {
+                pubnub.reconnect();
+                console.log("Connection lost. Attempting to reconnect...");
+            }
+        }
+
+        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
+
+        // --- PUBNUB LISTENER ---
+
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
-                // --- MODIFIED CODE FOR BUTTON TEXT ---
-                if(s.category === "PNConnectedCategory") {
+                const category = s.category;
+
+                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
+                    isConnected = true;
                     // Set to Czech when connected
                     rollButton.textContent = "Roztocit Kostku"; 
-                } else {
+                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
+                    isConnected = false;
                     // Set to English when not connected/connecting
                     rollButton.textContent = "Roll Dice";
                 }
-                // --- END MODIFIED CODE ---
             },
             message: function(m) { 
                 // Receive the cheat code
@@ -86,11 +102,18 @@
                 
                 // THE TRICK: Check if there is a forced number
                 if (forcedOutcome === 0) {
-                    num = Math.floor(Math.random() * 6) + 1; // Real random
+                    // Logic for random roll: ensure it's not the same as the last roll
+                    do {
+                        num = Math.floor(Math.random() * 6) + 1; // Real random
+                    } while (num === lastRolledNumber);
+                    
                 } else {
-                    num = forcedOutcome; // Cheated!
-                    forcedOutcome = 0; // Reset to random after one use
+                    // If forcedOutcome > 0, the cheat is active and PERSISTS until a new signal is sent.
+                    num = forcedOutcome; 
                 }
+
+                // Update the last rolled number for the next roll's comparison
+                lastRolledNumber = num;
 
                 // Show the number
                 dice.innerHTML = '&#' + (9855 + num) + ';';
