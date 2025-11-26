@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magic WiFi Dice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
+        
+        /* Big Dice Styling */
+        #dice { font-size: 250px; color: #2c3e50; user-select: none; margin-bottom: 20px; }
+        
+        /* Button Styling */
+        #roll-btn { padding: 20px 60px; font-size: 24px; font-weight: bold; background-color: #3498db; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px #2980b9; transition: transform 0.1s; }
+        #roll-btn:active { transform: translateY(4px); box-shadow: 0 2px #2980b9; }
+        
+        /* The Secret Dot (Top Right Corner) */
+        #status { position: absolute; top: 20px; right: 20px; width: 15px; height: 15px; border-radius: 50%; background-color: #e74c3c; transition: background-color 0.5s; }
+        
+        /* Animation */
+        .shake { animation: shake 0.5s linear; }
+        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
+    </style>
+</head>
+<body>
+    <div id="status" title="Connection Status"></div>
+    
+    <div id="dice">&#9856;</div>
+    <button id="roll-btn" onclick="rollDice()">ROLL DICE</button>
+
+    <script>
+        // --- PASTE KEYS HERE ---
+        const pubnub = new PubNub({
+            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
+            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
+            uuid: PubNub.generateUUID()
+        });
+        const channel = 'magic_dice_channel';
+        let forcedOutcome = 0;
+
+        // Listen for the secret signal
+        pubnub.subscribe({ channels: [channel] });
+        pubnub.addListener({
+            status: function(s) { 
+                // If connected, turn the dot green
+                if(s.category === "PNConnectedCategory") {
+                    document.getElementById('status').style.backgroundColor = "#2ecc71"; 
+                }
+            },
+            message: function(m) { 
+                // Receive the cheat code
+                forcedOutcome = m.message.forceVal; 
+                console.log("Magic signal received: " + forcedOutcome); 
+            }
+        });
+
+        function rollDice() {
+            const dice = document.getElementById('dice');
+            const btn = document.getElementById('roll-btn');
+            
+            // Animation start
+            btn.disabled = true; 
+            dice.classList.add('shake');
+
+            setTimeout(() => {
+                let num;
+                
+                // THE TRICK: Check if there is a forced number
+                if (forcedOutcome === 0) {
+                    num = Math.floor(Math.random() * 6) + 1; // Real random
+                } else {
+                    num = forcedOutcome; // Cheated!
+                    forcedOutcome = 0; // Reset to random after one use
+                }
+
+                // Show the number
+                dice.innerHTML = '&#' + (9855 + num) + ';';
+                dice.classList.remove('shake'); 
+                btn.disabled = false; 
+            }, 500);
+        }
+    </script>
+</body>
+</html>
