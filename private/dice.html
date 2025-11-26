@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Magic WiFi Dice</title>
+    <title>uplne normalni kostka</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
-        
-        /* Big Dice Styling */
         #dice { font-size: 250px; color: #2c3e50; user-select: none; margin-bottom: 20px; }
-        
-        /* Button Styling */
         #roll-btn { 
             padding: 20px 60px; 
             font-size: 24px; 
@@ -27,8 +23,6 @@
             transform: translateY(4px); 
             box-shadow: 0 2px #2980b9; 
         }
-        
-        /* Animation */
         .shake { animation: shake 0.5s linear; }
         @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
     </style>
@@ -36,9 +30,7 @@
 <body>
     <div id="dice">&#9856;</div>
     <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
-
     <script>
-        // --- PASTE KEYS HERE ---
         const pubnub = new PubNub({
             publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
             subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
@@ -46,76 +38,48 @@
         });
         const channel = 'magic_dice_channel';
         let forcedOutcome = 0;
-        
-        // Track the last rolled number to prevent immediate repetition
         let lastRolledNumber = 0; 
         let isConnected = false;
-
-        // Get the button element
         const rollButton = document.getElementById('roll-btn');
-
-        // --- CONNECTION MANAGEMENT (1-SECOND RETRY) ---
-
         function checkConnectionAndReconnect() {
             if (!isConnected) {
                 pubnub.reconnect();
                 console.log("Connection lost. Attempting to reconnect...");
             }
         }
-
         const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-
-        // --- PUBNUB LISTENER ---
-
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
                 const category = s.category;
-
                 if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
                     isConnected = true;
-                    // Set to Czech when connected
                     rollButton.textContent = "Roztocit Kostku"; 
                 } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
                     isConnected = false;
-                    // Set to English when not connected/connecting
                     rollButton.textContent = "Roll Dice";
                 }
             },
             message: function(m) { 
-                // Receive the cheat code
                 forcedOutcome = m.message.forceVal; 
                 console.log("Magic signal received: " + forcedOutcome); 
             }
         });
-
         function rollDice() {
             const dice = document.getElementById('dice');
             const btn = document.getElementById('roll-btn');
-            
-            // Animation start
             btn.disabled = true; 
             dice.classList.add('shake');
-
             setTimeout(() => {
                 let num;
-                
-                // THE TRICK: Check if there is a forced number
                 if (forcedOutcome === 0) {
-                    // Logic for random roll: ensure it's not the same as the last roll
                     do {
-                        num = Math.floor(Math.random() * 6) + 1; // Real random
+                        num = Math.floor(Math.random() * 6) + 1; 
                     } while (num === lastRolledNumber);
-                    
                 } else {
-                    // If forcedOutcome > 0, the cheat is active and PERSISTS until a new signal is sent.
                     num = forcedOutcome; 
                 }
-
-                // Update the last rolled number for the next roll's comparison
                 lastRolledNumber = num;
-
-                // Show the number
                 dice.innerHTML = '&#' + (9855 + num) + ';';
                 dice.classList.remove('shake'); 
                 btn.disabled = false; 
