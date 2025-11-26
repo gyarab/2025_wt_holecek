@@ -10,7 +10,10 @@
         button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
         button:active { background-color: #e74c3c; transform: scale(0.95); }
         .reset { background-color: #27ae60; margin-top: 20px; }
-        #status { color: #bdc3c7; margin-top: 20px; font-size: 14px; }
+        /* Styling for the connection status text */
+        #connection-status { color: #bdc3c7; margin-top: 20px; font-size: 14px; }
+        /* Style for buttons when not connected */
+        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -24,7 +27,7 @@
         <button onclick="sendSignal(6)">6</button>
     </div>
     <button class="reset" style="width: 90%" onclick="sendSignal(0)">RESET TO RANDOM</button>
-    <div id="status">Connecting...</div>
+    <div id="connection-status">Connecting</div>
 
     <script>
         // --- PASTE KEYS HERE ---
@@ -34,14 +37,69 @@
             uuid: PubNub.generateUUID()
         });
         const channel = 'magic_dice_channel';
+        
+        let isConnected = false;
+        const statusDiv = document.getElementById('connection-status');
+        const allButtons = document.querySelectorAll('button');
+
+        // --- CONNECTION MANAGEMENT FUNCTIONS ---
+
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            if (connected) {
+                // Simplified connected status
+                statusDiv.innerText = "Connected";
+                // Enable buttons
+                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
+            } else {
+                // Simplified disconnected status
+                statusDiv.innerText = "Connecting";
+                // Disable buttons visually
+                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
+            }
+        }
+
+        // Checks every second and attempts reconnect if disconnected
+        function checkConnectionAndReconnect() {
+            if (!isConnected) {
+                pubnub.reconnect();
+            }
+        }
+
+        // Start checking for connection every second
+        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
+        
+        // --- PUBNUB LISTENER ---
+        
+        // We only subscribe to listen for status updates, not messages
+        pubnub.subscribe({ channels: [channel] });
+        pubnub.addListener({
+            status: function(s) { 
+                const category = s.category;
+
+                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
+                    updateConnectionStatus(true);
+                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
+                    updateConnectionStatus(false);
+                }
+            }
+        });
+        
+        // --- SEND SIGNAL FUNCTION ---
 
         function sendSignal(num) {
+            if (!isConnected) {
+                // Prevent sending if not connected and show simple status
+                statusDiv.innerText = "Connecting";
+                return; 
+            }
+            
             pubnub.publish({ channel: channel, message: { forceVal: num } }, 
                 function(status, response) {
-                    if(!status.error) {
-                        const msg = (num === 0) ? "Next Roll: RANDOM" : "Next Roll: " + num;
-                        document.getElementById('status').innerText = msg;
-                        document.getElementById('status').style.color = "#2ecc71"; // Green text
+                    // Note: We don't change the status text here, 
+                    // as we only want "Connected" or "Connecting" to show the connection state.
+                    if (status.error) {
+                        console.error("Error sending signal:", status);
                     }
                 }
             );
