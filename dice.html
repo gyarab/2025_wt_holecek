@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic WiFi Dice</title>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <style>
+        /* CSS: Same beautiful styling as before */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR (The Controller) */
+        .sidebar {
+            width: 200px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .cheat-btn {
+            width: 80%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            background-color: #34495e;
+            color: #bdc3c7;
+            border: 1px solid #465c71;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cheat-btn:hover { background-color: #e74c3c; color: white; }
+        .cheat-btn:active { transform: scale(0.95); }
+
+        /* MAIN CONTENT (The Dice) */
+        .main-content {
+            flex-grow: 1;
+            background-color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dice {
+            font-size: 220px;
+            color: #2c3e50;
+            user-select: none;
+            margin-bottom: 40px;
+        }
+
+        #roll-btn {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px #2980b9;
+            transition: transform 0.1s;
+        }
+
+        #roll-btn:active { transform: translateY(4px); box-shadow: 0 2px #2980b9; }
+
+        /* STATUS INDICATOR (Tiny dot to show connection) */
+        #status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: red; /* Starts red (offline) */
+        }
+
+        /* Animation */
+        .shake { animation: shake-animation 0.5s linear; }
+        @keyframes shake-animation {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h4>Remote Control</h4>
+        <button class="cheat-btn" onclick="sendSignal(1)">Load 1</button>
+        <button class="cheat-btn" onclick="sendSignal(2)">Load 2</button>
+        <button class="cheat-btn" onclick="sendSignal(3)">Load 3</button>
+        <button class="cheat-btn" onclick="sendSignal(4)">Load 4</button>
+        <button class="cheat-btn" onclick="sendSignal(5)">Load 5</button>
+        <button class="cheat-btn" onclick="sendSignal(6)">Load 6</button>
+        <button class="cheat-btn" style="margin-top:20px; background-color:green; color:white;" onclick="sendSignal(0)">Reset Random</button>
+    </div>
+
+    <div class="main-content">
+        <div id="status" title="Connection Status"></div>
+        <div id="dice">&#9856;</div>
+        <button id="roll-btn" onclick="rollDice()">ROLL DICE</button>
+    </div>
+
+    <script>
+        // --- 1. SETUP PUBNUB (PASTE KEYS HERE) ---
+        const pubnub = new PubNub({
+            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
+            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
+            uuid: PubNub.generateUUID()
+        });
+
+        // The name of our secret channel
+        const channelName = 'magic_dice_channel';
+        
+        // Variable to hold the rigged number
+        let forcedOutcome = 0; 
+
+        // --- 2. LISTEN FOR SIGNALS (Receiver Logic) ---
+        pubnub.addListener({
+            status: function(statusEvent) {
+                if (statusEvent.category === "PNConnectedCategory") {
+                    document.getElementById('status').style.backgroundColor = "#2ecc71"; // Green = Online
+                }
+            },
+            message: function(msg) {
+                // When a message arrives from the cloud...
+                console.log("Signal received:", msg.message);
+                
+                // Update our local cheat variable
+                forcedOutcome = msg.message.forceVal;
+                
+                // Optional: Flash the screen or log to console to know it worked
+                // alert("Dice loaded with: " + forcedOutcome); 
+            }
+        });
+
+        // Connect to the channel
+        pubnub.subscribe({ channels: [channelName] });
+
+
+        // --- 3. SEND SIGNALS (Controller Logic) ---
+        function sendSignal(num) {
+            // Send the number to the cloud
+            pubnub.publish({
+                channel: channelName,
+                message: { forceVal: num }
+            });
+            console.log("Sent signal to load: " + num);
+        }
+
+
+        // --- 4. GAME LOGIC (Dice Logic) ---
+        function rollDice() {
+            const diceElement = document.getElementById('dice');
+            const buttonElement = document.getElementById('roll-btn');
+
+            buttonElement.disabled = true;
+            diceElement.classList.add('shake');
+
+            setTimeout(function() {
+                let finalNumber;
+
+                // CHECK: Is there a forced number waiting?
+                if (forcedOutcome === 0) {
+                    finalNumber = Math.floor(Math.random() * 6) + 1; // Random
+                } else {
+                    finalNumber = forcedOutcome; // Cheated!
+                    forcedOutcome = 0; // Reset to random after using the cheat
+                }
+
+                const diceCode = 9855 + finalNumber;
+                diceElement.innerHTML = '&#' + diceCode + ';';
+
+                diceElement.classList.remove('shake');
+                buttonElement.disabled = false;
+                
+                // Inform the cloud that we rolled (optional, keeps devices in sync)
+                // You could add code here to tell the controller the roll is done.
+            }, 500);
+        }
+    </script>
+</body>
+</html>
