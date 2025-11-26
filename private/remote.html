@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Magic Remote</title>
+    <title>Magic WiFi Dice</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <style>
-        body { background-color: #2c3e50; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        h1 { color: white; margin-bottom: 20px; font-size: 24px; }
-        button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
-        button:active { background-color: #e74c3c; transform: scale(0.95); }
-        .reset { background-color: #27ae60; margin-top: 20px; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
         
-        /* Styling for the connection status text (Now a combined status) */
-        #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
+        /* Big Dice Styling */
+        #dice { font-size: 250px; color: #2c3e50; user-select: none; margin-bottom: 20px; }
         
-        /* Style for buttons when not connected */
-        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
+        /* Button Styling */
+        #roll-btn { 
+            padding: 20px 60px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 6px #2980b9; 
+            transition: transform 0.1s; 
+        }
+        #roll-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 2px #2980b9; 
+        }
+        
+        /* Animation */
+        .shake { animation: shake 0.5s linear; }
+        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
     </style>
 </head>
 <body>
-    <h1>SECRET CONTROLLER</h1>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
-        <button onclick="sendSignal(1)">1</button>
-        <button onclick="sendSignal(2)">2</button>
-        <button onclick="sendSignal(3)">3</button>
-        <button onclick="sendSignal(4)">4</button>
-        <button onclick="sendSignal(5)">5</button>
-        <button onclick="sendSignal(6)">6</button>
-    </div>
-    <button class="reset" style="width: 90%" onclick="sendSignal(0)">RESET TO RANDOM</button>
-    
-    <div id="status-display">Connecting</div>
+    <div id="dice">&#9856;</div>
+    <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
 
     <script>
         // --- PASTE KEYS HERE ---
@@ -40,85 +45,83 @@
             uuid: PubNub.generateUUID()
         });
         const channel = 'magic_dice_channel';
+        let forcedOutcome = 0;
         
+        // NEW: Track the last rolled number to prevent immediate repetition
+        let lastRolledNumber = 0; 
         let isConnected = false;
-        // NEW: Variable to track the last outcome set
-        let lastForcedOutcome = 0; 
 
-        const statusDiv = document.getElementById('status-display');
-        const allButtons = document.querySelectorAll('button');
+        // Get the button element
+        const rollButton = document.getElementById('roll-btn');
 
-        // --- STATUS DISPLAY FUNCTION ---
-        function getStatusText() {
-            let connectionStatus = isConnected ? "Connected" : "Connecting";
-            let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
-            
-            // Combine both pieces of information
-            return connectionStatus + " (Next Roll: " + outcomeText + ")";
-        }
+        // --- CONNECTION MANAGEMENT ---
 
-        // --- CONNECTION MANAGEMENT FUNCTIONS ---
-
-        function updateConnectionStatus(connected) {
-            isConnected = connected;
-            statusDiv.innerText = getStatusText();
-
-            if (connected) {
-                // Enable buttons
-                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
-            } else {
-                // Disable buttons visually
-                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
-            }
-        }
-
-        // Checks every second and attempts reconnect if disconnected
         function checkConnectionAndReconnect() {
             if (!isConnected) {
                 pubnub.reconnect();
+                console.log("Connection lost. Attempting to reconnect...");
             }
         }
 
-        // Start checking for connection every second
         const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-        
+
         // --- PUBNUB LISTENER ---
-        
+
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
                 const category = s.category;
 
                 if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
-                    updateConnectionStatus(true);
+                    isConnected = true;
+                    // Set to Czech when connected
+                    rollButton.textContent = "Roztocit Kostku"; 
                 } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
-                    updateConnectionStatus(false);
+                    isConnected = false;
+                    // Set to English when not connected/connecting
+                    rollButton.textContent = "Roll Dice";
                 }
+            },
+            message: function(m) { 
+                // Receive the cheat code
+                forcedOutcome = m.message.forceVal; 
+                console.log("Magic signal received: " + forcedOutcome); 
             }
         });
-        
-        // --- SEND SIGNAL FUNCTION ---
 
-        function sendSignal(num) {
-            if (!isConnected) {
-                return; // Prevent sending if not connected
-            }
+        function rollDice() {
+            const dice = document.getElementById('dice');
+            const btn = document.getElementById('roll-btn');
             
-            pubnub.publish({ channel: channel, message: { forceVal: num } }, 
-                function(status, response) {
-                    if(!status.error) {
-                        // NEW: Update the tracking variable and the display window
-                        lastForcedOutcome = num;
-                        statusDiv.innerText = getStatusText();
-                    } else {
-                        console.error("Error sending signal:", status);
-                    }
-                }
-            );
-        }
+            // Animation start
+            btn.disabled = true; 
+            dice.classList.add('shake');
 
-        // Initialize display with current status
-        updateConnectionStatus(false);
+            setTimeout(() => {
+                let num;
+                
+                // THE TRICK: Check if there is a forced number
+                if (forcedOutcome === 0) {
+                    // --- MODIFIED LOGIC: Ensure random roll is not the same as the last roll ---
+                    do {
+                        num = Math.floor(Math.random() * 6) + 1; // Real random
+                    } while (num === lastRolledNumber);
+                    
+                } else {
+                    // If forcedOutcome > 0, the cheat is active and overrides the non-repeat rule
+                    num = forcedOutcome; 
+                    forcedOutcome = 0; // Reset to random after one use
+                }
+
+                // Update the last rolled number for the next roll's comparison
+                lastRolledNumber = num;
+
+                // Show the number
+                dice.innerHTML = '&#' + (9855 + num) + ';';
+                dice.classList.remove('shake'); 
+                btn.disabled = false; 
+            }, 500);
+        }
     </script>
 </body>
 </html>
