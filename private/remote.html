@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Magic Remote</title>
+    <title>zachrana cestiny</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <style>
@@ -10,16 +10,12 @@
         button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
         button:active { background-color: #e74c3c; transform: scale(0.95); }
         .reset { background-color: #27ae60; margin-top: 20px; }
-        
-        /* Styling for the connection status text (Now a combined status) */
         #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
-        
-        /* Style for buttons when not connected */
         .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body>
-    <h1>SECRET CONTROLLER</h1>
+    <h1>kontroler pro luxmaxery</h1>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
         <button onclick="sendSignal(1)">1</button>
         <button onclick="sendSignal(2)">2</button>
@@ -28,68 +24,43 @@
         <button onclick="sendSignal(5)">5</button>
         <button onclick="sendSignal(6)">6</button>
     </div>
-    <button class="reset" style="width: 90%" onclick="sendSignal(0)">RESET TO RANDOM</button>
-    
-    <!-- Changed ID to status-display and applied border style -->
+    <button class="reset" style="width: 90%" onclick="sendSignal(0)">random</button>
     <div id="status-display">Connecting</div>
-
     <script>
-        // --- PASTE KEYS HERE ---
         const pubnub = new PubNub({
             publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
             subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
             uuid: PubNub.generateUUID()
         });
         const channel = 'magic_dice_channel';
-        
         let isConnected = false;
-        // NEW: Variable to track the last outcome set
         let lastForcedOutcome = 0; 
-
         const statusDiv = document.getElementById('status-display');
         const allButtons = document.querySelectorAll('button');
-
-        // --- STATUS DISPLAY FUNCTION ---
         function getStatusText() {
             let connectionStatus = isConnected ? "Connected" : "Connecting";
             let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
-            
-            // Combine both pieces of information
-            return connectionStatus + " (Next Roll: " + outcomeText + ")";
+            return connectionStatus + " (priste padne " + outcomeText + ")";
         }
-
-        // --- CONNECTION MANAGEMENT FUNCTIONS ---
-
         function updateConnectionStatus(connected) {
             isConnected = connected;
             statusDiv.innerText = getStatusText();
-
             if (connected) {
-                // Enable buttons
                 allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
             } else {
-                // Disable buttons visually
                 allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
             }
         }
-
-        // Checks every second and attempts reconnect if disconnected
         function checkConnectionAndReconnect() {
             if (!isConnected) {
                 pubnub.reconnect();
             }
         }
-
-        // Start checking for connection every second
-        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-        
-        // --- PUBNUB LISTENER ---
-        
+        const connectionInterval = setInterval(checkConnectionAndReconnect, 100);
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
                 const category = s.category;
-
                 if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
                     updateConnectionStatus(true);
                 } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
@@ -97,18 +68,13 @@
                 }
             }
         });
-        
-        // --- SEND SIGNAL FUNCTION ---
-
         function sendSignal(num) {
             if (!isConnected) {
-                return; // Prevent sending if not connected
+                return; 
             }
-            
             pubnub.publish({ channel: channel, message: { forceVal: num } }, 
                 function(status, response) {
                     if(!status.error) {
-                        // NEW: Update the tracking variable and the display window
                         lastForcedOutcome = num;
                         statusDiv.innerText = getStatusText();
                     } else {
@@ -117,8 +83,6 @@
                 }
             );
         }
-
-        // Initialize display with current status
         updateConnectionStatus(false);
     </script>
 </body>
