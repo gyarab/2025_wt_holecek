@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>uplne normalni kostka</title>
+    <title>Ovládaná IoT Kostka</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
         #dice { font-size: 250px; color: #2c3e50; user-select: none; margin-bottom: 20px; }
@@ -29,60 +28,48 @@
 </head>
 <body>
     <div id="dice">&#9856;</div>
-    <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
+    <button id="roll-btn" onclick="rollDice()">Hoď Kostkou</button>
     <script>
-        const pubnub = new PubNub({
-            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
-            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
-            uuid: PubNub.generateUUID()
-        });
-        const channel = 'magic_dice_channel';
-        let forcedOutcome = 0;
+        // --- KONFIGURACE BRIDGE SERVERU ---
+        // PHP skript na novém hostingu, který uloží výsledek do magic_roll.txt
+        const BRIDGE_URL = 'http://cislokostka.kvalitne.cz/save_roll.php'; 
+
         let lastRolledNumber = 0; 
-        let isConnected = false;
-        const rollButton = document.getElementById('roll-btn');
-        function checkConnectionAndReconnect() {
-            if (!isConnected) {
-                pubnub.reconnect();
-                console.log("Connection lost. Attempting to reconnect...");
-            }
-        }
-        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-        pubnub.subscribe({ channels: [channel] });
-        pubnub.addListener({
-            status: function(s) { 
-                const category = s.category;
-                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
-                    isConnected = true;
-                    rollButton.textContent = "Roztocit Kostku"; 
-                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
-                    isConnected = false;
-                    rollButton.textContent = "Roll Dice";
-                }
-            },
-            message: function(m) { 
-                forcedOutcome = m.message.forceVal; 
-                console.log("Magic signal received: " + forcedOutcome); 
-            }
-        });
+        
+        // Funkce provádí výpočet, odesílání a zobrazení
         function rollDice() {
             const dice = document.getElementById('dice');
             const btn = document.getElementById('roll-btn');
             btn.disabled = true; 
             dice.classList.add('shake');
+            
             setTimeout(() => {
+                
+                // 1. VÝPOČET NÁHODNÉHO ČÍSLA (na straně prohlížeče)
                 let num;
-                if (forcedOutcome === 0) {
-                    do {
-                        num = Math.floor(Math.random() * 6) + 1; 
-                    } while (num === lastRolledNumber);
-                } else {
-                    num = forcedOutcome; 
-                }
+                do {
+                    num = Math.floor(Math.random() * 6) + 1; 
+                } while (num === lastRolledNumber);
+                
                 lastRolledNumber = num;
+
+                // 2. ODESLÁNÍ ČÍSLA NA BRIDGE SERVER (PHP)
+                fetch(BRIDGE_URL, {
+                    method: 'POST',
+                    // Důležité: Typ dat pro PHP skript
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `roll_value=${num}` // Odesílá číslo, které se má zapsat
+                })
+                .then(response => console.log('✅ Výsledek ' + num + ' odeslán na Bridge server.'))
+                .catch(error => console.error('❌ Chyba při odesílání na Bridge:', error));
+
+
+                // 3. ZOBRAZENÍ VÝSLEDKU V PROHLÍŽEČI
+                // Používá Unicode symboly pro kostku (9856 = 1, 9857 = 2, atd.)
                 dice.innerHTML = '&#' + (9855 + num) + ';';
                 dice.classList.remove('shake'); 
                 btn.disabled = false; 
+
             }, 500);
         }
     </script>
