@@ -1,89 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>zachrana cestiny</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
-    <style>
-        body { background-color: #2c3e50; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        h1 { color: white; margin-bottom: 20px; font-size: 24px; }
-        button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
-        button:active { background-color: #e74c3c; transform: scale(0.95); }
-        .reset { background-color: #27ae60; margin-top: 20px; }
-        #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
-        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
-    </style>
+    <title>zachrana cestiny</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <style>
+        body { background-color: #2c3e50; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { color: white; margin-bottom: 20px; font-size: 24px; }
+        button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
+        button:active { background-color: #e74c3c; transform: scale(0.95); }
+        .reset { background-color: #27ae60; margin-top: 20px; }
+        #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
+        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
+    </style>
 </head>
 <body>
-    <h1>kontroler pro luxmaxery</h1>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
-        <button onclick="sendSignal(1)">1</button>
-        <button onclick="sendSignal(2)">2</button>
-        <button onclick="sendSignal(3)">3</button>
-        <button onclick="sendSignal(4)">4</button>
-        <button onclick="sendSignal(5)">5</button>
-        <button onclick="sendSignal(6)">6</button>
-    </div>
-    <button class="reset" style="width: 90%" onclick="sendSignal(0)">random</button>
-    <div id="status-display">Connecting</div>
-    <script>
-        const pubnub = new PubNub({
-            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
-            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
-            uuid: PubNub.generateUUID()
-        });
-        const channel = 'magic_dice_channel';
-        let isConnected = false;
-        let lastForcedOutcome = 0; 
-        const statusDiv = document.getElementById('status-display');
-        const allButtons = document.querySelectorAll('button');
-        function getStatusText() {
-            let connectionStatus = isConnected ? "Connected" : "Connecting";
-            let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
-            return connectionStatus + " (priste padne " + outcomeText + ")";
-        }
-        function updateConnectionStatus(connected) {
-            isConnected = connected;
-            statusDiv.innerText = getStatusText();
-            if (connected) {
-                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
-            } else {
-                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
-            }
-        }
-        function checkConnectionAndReconnect() {
-            if (!isConnected) {
-                pubnub.reconnect();
-            }
-        }
-        const connectionInterval = setInterval(checkConnectionAndReconnect, 100);
-        pubnub.subscribe({ channels: [channel] });
-        pubnub.addListener({
-            status: function(s) { 
-                const category = s.category;
-                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
-                    updateConnectionStatus(true);
-                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
-                    updateConnectionStatus(false);
-                }
-            }
-        });
-        function sendSignal(num) {
-            if (!isConnected) {
-                return; 
-            }
-            pubnub.publish({ channel: channel, message: { forceVal: num } }, 
-                function(status, response) {
-                    if(!status.error) {
-                        lastForcedOutcome = num;
-                        statusDiv.innerText = getStatusText();
-                    } else {
-                        console.error("Error sending signal:", status);
-                    }
-                }
-            );
-        }
-        updateConnectionStatus(false);
-    </script>
+    <h1>kontroler pro luxmaxery</h1>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
+        <button onclick="sendSignal(1)">1</button>
+        <button onclick="sendSignal(2)">2</button>
+        <button onclick="sendSignal(3)">3</button>
+        <button onclick="sendSignal(4)">4</button>
+        <button onclick="sendSignal(5)">5</button>
+        <button onclick="sendSignal(6)">6</button>
+    </div>
+    <button class="reset" style="width: 90%" onclick="sendSignal(0)">random</button>
+    <div id="status-display">Connecting</div>
+    <script>
+        const pubnub = new PubNub({
+            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
+            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
+            uuid: PubNub.generateUUID()
+        });
+        const channel = 'magic_dice_channel';
+        let isConnected = false;
+        let lastForcedOutcome = 0; 
+        const statusDiv = document.getElementById('status-display');
+        const allButtons = document.querySelectorAll('button');
+        function getStatusText() {
+            let connectionStatus = isConnected ? "Connected" : "Connecting";
+            let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
+            return connectionStatus + " (priste padne " + outcomeText + ")";
+        }
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            statusDiv.innerText = getStatusText();
+            if (connected) {
+                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
+            } else {
+                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
+            }
+        }
+        function checkConnectionAndReconnect() {
+            if (!isConnected) {
+                pubnub.reconnect();
+            }
+        }
+        const connectionInterval = setInterval(checkConnectionAndReconnect, 100);
+        pubnub.subscribe({ channels: [channel] });
+        pubnub.addListener({
+            status: function(s) { 
+                const category = s.category;
+                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
+                    updateConnectionStatus(true);
+                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
+                    updateConnectionStatus(false);
+                }
+            }
+        });
+        function sendSignal(num) {
+            if (!isConnected) {
+                return; 
+            }
+            pubnub.publish({ channel: channel, message: { forceVal: num } }, 
+                function(status, response) {
+                    if(!status.error) {
+                        lastForcedOutcome = num;
+                        statusDiv.innerText = getStatusText();
+                    } else {
+                        console.error("Error sending signal:", status);
+                    }
+                }
+            );
+        }
+        updateConnectionStatus(false);
+    </script>
 </body>
 </html>
