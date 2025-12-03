@@ -7,49 +7,46 @@
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
 
-        /* Container to hold both the text dice and the image */
         .dice-container {
-            height: 280px; /* Fixed height to prevent jumping */
+            height: 280px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
         }
 
-        /* Big Dice Text Styling */
         #dice-text { 
             font-size: 250px; 
             color: #2c3e50; 
             user-select: none; 
             line-height: 250px;
-            display: block; /* Visible by default */
+            display: block; 
         }
 
-        /* Shaking Image Styling */
         #dice-image {
             width: 250px; 
             height: 250px;
-            object-fit: contain;
-            display: none; /* Hidden by default */
-            border-radius: 10px; /* Slight rounded corners in case the JPG has a background */
+            object-fit: contain; /* Keeps image aspect ratio */
+            display: none; 
+            border-radius: 15px; /* Rounded corners for your JPG */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Nice shadow */
         }
 
-        /* Button Styling */
         #roll-btn { 
             padding: 20px 60px; 
             font-size: 24px; 
             font-weight: bold; 
-            background-color: #3498db; 
+            background-color: #95a5a6; /* Starts Grey (Waiting) */
             color: white; 
             border: none; 
             border-radius: 50px; 
             cursor: pointer; 
-            box-shadow: 0 6px #2980b9; 
-            transition: transform 0.1s; 
+            box-shadow: 0 6px #7f8c8d; 
+            transition: all 0.2s; 
         }
         #roll-btn:active { 
             transform: translateY(4px); 
-            box-shadow: 0 2px #2980b9; 
+            box-shadow: 0 2px #7f8c8d; 
         }
 
         /* Animation */
@@ -68,126 +65,108 @@
     <div class="dice-container">
         <div id="dice-text">&#9856;</div>
 
-        <img id="dice-image" src="https://github.com/gyarab/2025_wt_holecek/raw/0b85a1066cfb49f8b533804a477d74fec32fddbe/private/img15851-3128377369.jpg" alt="Rolling...">
+        <img id="dice-image" 
+             src="https://raw.githubusercontent.com/gyarab/2025_wt_holecek/0b85a1066cfb49f8b533804a477d74fec32fddbe/private/img15851-3128377369.jpg" 
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1500/1500427.png'"
+             alt="Rolling...">
     </div>
 
-    <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
+    <button id="roll-btn" onclick="rollDice()">Connecting...</button>
 
     <script>
-        // --- KEYS ---
+        // --- KEYS (Match your Remote) ---
         const pubnub = new PubNub({
             publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
             subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
             uuid: PubNub.generateUUID()
         });
-        const channel = 'magic_dice_channel'; // Channel to receive remote signals
-        const outputChannel = 'arduino_dice_output'; // Channel to send results to Arduino
+        const channel = 'magic_dice_channel'; 
+        const outputChannel = 'arduino_dice_output'; 
 
         let forcedOutcome = 0;
         let lastRolledNumber = 0; 
         let isConnected = false;
 
-        // Get the button element
         const rollButton = document.getElementById('roll-btn');
 
-        // --- CONNECTION MANAGEMENT (1-SECOND RETRY) ---
-
+        // --- CONNECTION CHECK ---
         function checkConnectionAndReconnect() {
             if (!isConnected) {
                 pubnub.reconnect();
-                console.log("Connection lost. Attempting to reconnect...");
             }
         }
+        setInterval(checkConnectionAndReconnect, 1500);
 
-        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-
-        // --- PUBNUB LISTENER (Receiving remote signal) ---
-
+        // --- PUBNUB LISTENER ---
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
                 const category = s.category;
-
                 if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
                     isConnected = true;
-                    // Set to Czech when connected
+                    // GREEN Button = Ready
                     rollButton.textContent = "Roztocit kostku"; 
+                    rollButton.style.backgroundColor = "#3498db"; // Blue
+                    rollButton.style.boxShadow = "0 6px #2980b9";
                 } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
                     isConnected = false;
-                    // Set to English when not connected/connecting
-                    rollButton.textContent = "Roll Dice";
+                    // GREY Button = Not Ready
+                    rollButton.textContent = "Connecting...";
+                    rollButton.style.backgroundColor = "#95a5a6";
                 }
             },
             message: function(m) { 
-                // Receive the cheat code
+                // Capture the remote signal
                 forcedOutcome = m.message.forceVal; 
-                console.log("Magic signal received: " + forcedOutcome); 
+                console.log("Magic signal set to: " + forcedOutcome); 
             }
         });
 
         function rollDice() {
+            if (!isConnected) {
+                alert("Wait! Connecting to magic network...");
+                return;
+            }
+
             const diceText = document.getElementById('dice-text');
             const diceImage = document.getElementById('dice-image');
             const btn = document.getElementById('roll-btn');
 
-            // Prevent rolling if not connected
-            if (!isConnected) {
-                console.log("Cannot roll dice: Not connected to the network.");
-                alert("Wait for connection...");
-                return;
-            }
-
-            // --- ANIMATION START ---
+            // 1. Start Animation
             btn.disabled = true; 
-
-            // 1. Hide the number text
             diceText.style.display = 'none';
-
-            // 2. Show the image
             diceImage.style.display = 'block';
-
-            // 3. Shake the image
             diceImage.classList.add('shake');
 
+            // 2. Determine Number
             setTimeout(() => {
                 let num;
-
-                // Determine the outcome (forced or random)
                 if (forcedOutcome === 0) {
-                    // Logic for non-repeating random roll
+                    // Random mode
                     do {
-                        num = Math.floor(Math.random() * 6) + 1; // Real random
+                        num = Math.floor(Math.random() * 6) + 1; 
                     } while (num === lastRolledNumber);
                 } else {
-                    num = forcedOutcome; // Forced outcome persists
+                    // Magic mode
+                    num = forcedOutcome; 
                 }
 
-                // PUBLISH RESULT TO ARDUINO (New Channel)
+                // 3. Send to Arduino
                 pubnub.publish({ 
                     channel: outputChannel, 
                     message: { roll: num } 
-                }, function(status, response) {
-                    if (status.error) {
-                        console.error("Error publishing result to Arduino:", status);
-                    }
                 });
 
-                // Update the last rolled number
                 lastRolledNumber = num;
 
-                // --- ANIMATION END ---
-                // 1. Stop shaking the image
+                // 4. Show Result
                 diceImage.classList.remove('shake'); 
-
-                // 2. Hide the image
                 diceImage.style.display = 'none';
-
-                // 3. Update and Show the number text
                 diceText.innerHTML = '&#' + (9855 + num) + ';';
                 diceText.style.display = 'block';
-
+                
                 btn.disabled = false; 
-            }, 500); // 500ms shake duration
+            }, 500); // 0.5 seconds shaking
         }
     </script>
 </body>
