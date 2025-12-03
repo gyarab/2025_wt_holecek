@@ -27,8 +27,8 @@
 
         /* Shaking Image Styling */
         #dice-image {
-            width: 250px; 
-            height: 250px;
+            width: 200px; /* Adjusted size for better fit */
+            height: 200px;
             object-fit: contain;
             display: none; /* Hidden by default */
         }
@@ -52,22 +52,28 @@
         }
 
         /* Animation */
-        .shake { animation: shake 0.5s linear; }
-        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
+        .shake { animation: shake 0.5s linear infinite; }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            50% { transform: rotate(-15deg); } 
+            75% { transform: rotate(5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
     </style>
 </head>
 <body>
 
     <div class="dice-container">
         <div id="dice-text">&#9856;</div>
-        
-        <img id="dice-image" src="PUT_YOUR_IMAGE_LINK_HERE.png" alt="Rolling...">
+
+        <img id="dice-image" src="https://cdn-icons-png.flaticon.com/512/1500/1500427.png" alt="Rolling...">
     </div>
 
     <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
 
     <script>
-        // --- PASTE KEYS HERE ---
+        // --- KEYS ---
         const pubnub = new PubNub({
             publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
             subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
@@ -126,18 +132,19 @@
             // Prevent rolling if not connected
             if (!isConnected) {
                 console.log("Cannot roll dice: Not connected to the network.");
+                alert("Wait for connection...");
                 return;
             }
 
             // --- ANIMATION START ---
             btn.disabled = true; 
-            
+
             // 1. Hide the number text
             diceText.style.display = 'none';
-            
+
             // 2. Show the image
             diceImage.style.display = 'block';
-            
+
             // 3. Shake the image
             diceImage.classList.add('shake');
 
@@ -164,20 +171,18 @@
                     }
                 });
 
-                // Update the last rolled number for the next roll's comparison
+                // Update the last rolled number
                 lastRolledNumber = num;
 
                 // --- ANIMATION END ---
-                // 1. Update the number text HTML
-                diceText.innerHTML = '&#' + (9855 + num) + ';';
-                
-                // 2. Stop shaking the image
+                // 1. Stop shaking the image
                 diceImage.classList.remove('shake'); 
-                
-                // 3. Hide the image
+
+                // 2. Hide the image
                 diceImage.style.display = 'none';
-                
-                // 4. Show the number text again
+
+                // 3. Update and Show the number text
+                diceText.innerHTML = '&#' + (9855 + num) + ';';
                 diceText.style.display = 'block';
 
                 btn.disabled = false; 
