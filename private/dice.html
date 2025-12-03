@@ -27,10 +27,11 @@
 
         /* Shaking Image Styling */
         #dice-image {
-            width: 200px; /* Adjusted size for better fit */
-            height: 200px;
+            width: 250px; 
+            height: 250px;
             object-fit: contain;
             display: none; /* Hidden by default */
+            border-radius: 10px; /* Slight rounded corners in case the JPG has a background */
         }
 
         /* Button Styling */
@@ -67,7 +68,7 @@
     <div class="dice-container">
         <div id="dice-text">&#9856;</div>
 
-        <img id="dice-image" src="https://cdn-icons-png.flaticon.com/512/1500/1500427.png" alt="Rolling...">
+        <img id="dice-image" src="https://github.com/gyarab/2025_wt_holecek/raw/0b85a1066cfb49f8b533804a477d74fec32fddbe/private/img15851-3128377369.jpg" alt="Rolling...">
     </div>
 
     <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
