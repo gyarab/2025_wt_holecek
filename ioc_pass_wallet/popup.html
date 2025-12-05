@@ -3,37 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>pass wallet</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Password Wallet</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h2>moje hesla</h2>
+  <header>
+    <h2>🔐 Správce hesel</h2>
+  </header>
+  
   <div id="addBox">
-    <input type="text" id="webInput" placeholder="web">
-    <input type="text" id="userInput" placeholder="user">
-    <input type="password" id="passInput" placeholder="heslo">
-    <input type="text" id="noteInput" placeholder="poznamka">
-    <button id="addBtn">add</button>
+    <input type="text" id="webInput" placeholder="Web (např. google.com)">
+    <input type="text" id="userInput" placeholder="Uživatelské jméno / Email">
+    <input type="password" id="passInput" placeholder="Heslo">
+    <input type="text" id="noteInput" placeholder="Poznámka (volitelné)">
+    <button id="addBtn">Přidat heslo</button>
   </div>
+  
   <div id="listBox">
-    <h3>sawed ucty</h3>
-    <p id="noItems">nothing here</p>
-    <ul id="list"></ul>
+    <h3>Uložené účty</h3>
+    <p id="noItems">Žádné uložené účty.</p>
+    <ul id="list">
+      </ul>
   </div>
+  
   <div id="editBox" class="hidden">
     <div class="inner">
-      <h4>upravit polozku</h4>
+      <h4>Upravit položku</h4>
       <input type="text" id="editWeb" disabled>
-      <input type="text" id="editUser">
-      <input type="password" id="editPass">
-      <input type="text" id="editNote">
+      <input type="text" id="editUser" placeholder="Uživatelské jméno / Email">
+      <input type="password" id="editPass" placeholder="Heslo">
+      <input type="text" id="editNote" placeholder="Poznámka">
       <div class="btns">
-        <button id="saveBtn">save</button>
-        <button id="deleteBtn">delete</button>
-        <button id="closeBtn">close</button>
+        <button id="saveBtn">Uložit</button>
+        <button id="deleteBtn">Smazat</button>
+        <button id="closeBtn">Zavřít</button>
       </div>
     </div>
   </div>
-  <script src="main.js"></script>
+  
+  <script src="popup.js"></script>
 </body>
 </html>
