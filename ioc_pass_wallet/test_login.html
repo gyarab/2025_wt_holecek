@@ -1,12 +1,78 @@
 <!doctype html>
 <html>
-  <head><meta charset="utf-8"><title>test login</title></head>
+  <head>
+    <meta charset="utf-8">
+    <title>Testovací přihlášení</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .login-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 350px;
+      }
+      h1 {
+        color: #4A90E2;
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 1.5em;
+        text-align: center;
+      }
+      label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #555;
+      }
+      input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4A90E2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 700;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #3B82F6;
+      }
+    </style>
+  </head>
   <body>
-    <h1>testovaci prihlaseni</h1>
-    <form>
-      <label>Username: <input type="text" name="username"></label><br><br>
-      <label>Password: <input type="password" name="password"></label><br><br>
-      <button type="submit">login</button>
-    </form>
+    <div class="login-container">
+      <h1>Testovací přihlášení</h1>
+      <form>
+        <label>Uživatelské jméno: 
+          <input type="text" name="username">
+        </label>
+        <label>Heslo: 
+          <input type="password" name="password">
+        </label>
+        <button type="submit">Přihlásit se</button>
+      </form>
+    </div>
   </body>
 </html>
