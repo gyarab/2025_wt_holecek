@@ -1,29 +1,238 @@
-:root { --accent: #2860d3; --bg: #fff; --muted: #666; }
-* { box-sizing: border-box; }
-body { margin:0; font-family: Arial, Helvetica, sans-serif; width: 340px; padding: 10px; background: var(--bg); color:#111; }
-header h2 { margin:0 0 8px 0; font-size:16px; }
-#addSection input { width: 100%; padding:6px; margin:6px 0; }
-#addBtn { width:100%; padding:8px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer; }
-#listSection { margin-top:12px; }
-#entriesList { list-style:none; padding:0; margin:0; max-height:220px; overflow:auto; }
-.entry {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px; border-radius:6px; margin-bottom:6px; background:#f4f6fb;
+:root { 
+  --primary: #4A90E2; /* Světlejší modrá pro akcenty */
+  --secondary: #6B7280; /* Tlumená šedá */
+  --bg-color: #f7f7f7; /* Světle šedé pozadí */
+  --card-bg: #ffffff; /* Bílé karty */
+  --danger: #EF4444; /* Červená */
+  --success: #10B981; /* Zelená */
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
-.entry .left {display:flex; gap:8px; align-items:center;}
-.host { font-weight:600; }
-.small { font-size:12px; color:var(--muted); }
-.actionBtns button { margin-left:6px; padding:6px 8px; border:none; border-radius:6px; cursor:pointer; }
-.actionBtns button.edit { background:#4caf50; color:#fff; }
-.actionBtns button.fill { background:#2860d3; color:#fff; }
-.actionBtns button.copy { background:#777; color:#fff; }
-#emptyMsg { color:var(--muted); font-size:13px; margin:6px 0; }
-#editModal.hidden { display:none; }
-#editModal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
-.modalInner { width:300px; background:#fff; padding:12px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.2); }
-.modalInner input { width:100%; padding:6px; margin:6px 0; }
-.modalBtns { display:flex; gap:6px; justify-content:space-between; margin-top:8px; }
-.modalBtns button { flex:1; padding:8px; border:none; border-radius:6px; cursor:pointer; }
-.modalBtns button#delEntry { background:#d9534f; color:#fff; }
-.modalBtns button#saveEdit { background:#2860d3; color:#fff; }
-.modalBtns button#cancelEdit { background:#999; color:#fff; }
+
+* { 
+  box-sizing: border-box; 
+}
+
+body { 
+  margin:0; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  width: 360px; /* Mírně širší */
+  padding: 15px; 
+  background: var(--bg-color); 
+  color: #1F2937;
+}
+
+header h2 { 
+  margin:0 0 15px 0; 
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 2px solid #E5E7EB;
+  padding-bottom: 10px;
+}
+
+/* Sekce přidávání */
+#addBox input { 
+  width: 100%; 
+  padding: 10px 12px;
+  margin: 5px 0; 
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+#addBtn { 
+  width:100%; 
+  padding: 10px; 
+  margin-top: 10px;
+  background: var(--primary); 
+  color: var(--card-bg); 
+  border: none; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+#addBtn:hover {
+  background: #3B82F6;
+}
+
+/* Sekce seznamu */
+#listBox { 
+  margin-top: 20px; 
+}
+
+#listBox h3 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  color: var(--secondary);
+  font-weight: 500;
+}
+
+#noItems { 
+  color: var(--secondary); 
+  font-size: 0.9rem; 
+  margin: 10px 0; 
+  padding: 10px;
+  text-align: center;
+  border: 1px dashed #D1D5DB;
+  border-radius: 6px;
+}
+
+#list { 
+  list-style:none; 
+  padding:0; 
+  margin:0; 
+  max-height: 250px; 
+  overflow-y: auto; 
+}
+
+.entry {
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between;
+  padding: 10px 12px; 
+  border-radius: 6px; 
+  margin-bottom: 8px; 
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+.entry .left {
+  flex-grow: 1;
+  margin-right: 10px;
+  min-width: 0;
+}
+
+.host { 
+  font-weight: 600; 
+  color: var(--primary);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.small { 
+  font-size: 0.75rem; 
+  color: var(--secondary); 
+  display: block;
+  margin-top: 3px;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.actionBtns button { 
+  padding: 7px 8px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer;
+  line-height: 1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.actionBtns button:hover {
+  opacity: 0.9;
+}
+
+.actionBtns button.edit { 
+  background: var(--success); 
+  color: white; 
+}
+
+.actionBtns button.fill { 
+  background: var(--primary); 
+  color: white; 
+}
+
+.actionBtns button.copy { 
+  background: var(--secondary); 
+  color: white; 
+}
+
+/* Edit Modal */
+#editBox.hidden { 
+  display:none; 
+}
+
+#editBox { 
+  position:fixed; 
+  inset:0; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  background:rgba(0,0,0,0.5); 
+}
+
+.inner { 
+  width:90%; 
+  max-width:320px; 
+  background: var(--card-bg); 
+  padding: 20px; 
+  border-radius: 10px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+}
+
+.inner h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.inner input { 
+  width:100%; 
+  padding: 10px 12px; 
+  margin: 5px 0;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+}
+
+.inner input:disabled {
+  background: #F3F4F6;
+  color: var(--secondary);
+}
+
+.btns { 
+  display:flex; 
+  gap: 10px; 
+  justify-content:space-between; 
+  margin-top: 20px; 
+}
+
+.btns button { 
+  flex:1; 
+  padding: 10px; 
+  border:none; 
+  border-radius: 6px; 
+  cursor:pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btns button:hover {
+    opacity: 0.9;
+}
+
+.btns button#deleteBtn { 
+  background: var(--danger); 
+  color: white; 
+}
+
+.btns button#saveBtn { 
+  background: var(--primary); 
+  color: white; 
+}
+
+.btns button#closeBtn { 
+  background: #9CA3AF; 
+  color: white; 
+}
