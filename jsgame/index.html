@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Uhodni číslo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        #game-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+            min-height: 25px; 
+        }
+        #attempts {
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .win {
+            color: green;
+        }
+        .lose {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>Uhodni číslo (1 - 100)</h1>
+        <p>Tipněte si číslo.</p>
+
+        <input type="number" id="guessInput" min="1" max="100">
+        <button onclick="checkGuess()">Hádej!</button>
+
+        <p id="attempts">Zbývá pokusů: 7</p>
+        <p id="message"></p>
+
+        <button onclick="newGame()" id="newGameButton" style="display:none;">Nová hra</button>
+    </div>
+
+    <script>
+        const MAX_ATTEMPTS = 7;
+        let secretNumber = 0;
+        let attempts = 0;
+        let gameOver = false;
+
+        const guessInput = document.getElementById('guessInput');
+        const messageDisplay = document.getElementById('message');
+        const attemptsDisplay = document.getElementById('attempts');
+        const newGameButton = document.getElementById('newGameButton');
+
+        function newGame() {
+
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameOver = false;
+
+
+            messageDisplay.textContent = '';
+            messageDisplay.className = '';
+            attemptsDisplay.textContent = `Zbývá pokusů: ${MAX_ATTEMPTS}`;
+            guessInput.value = '';
+            guessInput.disabled = false;
+            newGameButton.style.display = 'none';
+
+            console.log('--- Nová hra zahájena ---');
+
+            console.log(`POZOR! Tajné číslo je: ${secretNumber}`);
+            console.log(`Maximální počet pokusů: ${MAX_ATTEMPTS}`);
+        }
+
+
+        function checkGuess() {
+            if (gameOver) {
+
+                messageDisplay.textContent = 'Hra skončila. Spusťte prosím novou hru.';
+                messageDisplay.className = 'lose';
+                console.log('Hra již skončila.');
+                return;
+            }
+
+
+            const guess = parseInt(guessInput.value);
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                messageDisplay.textContent = 'Prosím zadejte platné číslo mezi 1 a 100.';
+                messageDisplay.className = '';
+                return;
+            }
+
+
+            attempts++;
+            const attemptsLeft = MAX_ATTEMPTS - attempts;
+
+
+            console.log(`Pokus č. ${attempts}: Tip uživatele = ${guess}`);
+
+            let message = '';
+
+            if (guess === secretNumber) {
+
+                message = `🎉 Gratuluji! Uhodl jste číslo ${secretNumber} na ${attempts}. pokus!`;
+                messageDisplay.className = 'win'; 
+                gameOver = true;
+                console.log('VÝHRA!');
+            } else if (attempts >= MAX_ATTEMPTS) {
+                message = `❌ Prohrál jste! Vyčerpal jste všechny pokusy. Tajné číslo bylo ${secretNumber}.`;
+                messageDisplay.className = 'lose'; 
+                gameOver = true;
+                console.log('PROHRA - vyčerpány pokusy.');
+            } else if (guess < secretNumber) {
+
+                message = 'Tip je malý. Zkuste **větší** číslo.';
+                messageDisplay.className = '';
+            } else { 
+
+                message = 'Tip je velký. Zkuste **menší** číslo.';
+                messageDisplay.className = '';
+            }
+
+
+            messageDisplay.innerHTML = message; 
+            attemptsDisplay.textContent = `Zbývá pokusů: ${attemptsLeft < 0 ? 0 : attemptsLeft}`;
+
+
+            if (gameOver) {
+                guessInput.disabled = true;
+                newGameButton.style.display = 'block';
+            }
+        }
+
+        newGame();
+    </script>
+
+</body>
+</html>
