@@ -1,126 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Magic Remote</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
-    <style>
-        body { background-color: #2c3e50; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        h1 { color: white; margin-bottom: 20px; font-size: 24px; }
-        button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
-        button:active { background-color: #e74c3c; transform: scale(0.95); }
-        .reset { background-color: #27ae60; margin-top: 20px; }
-        
-        /* Styling for the connection status text (Now a combined status) */
-        #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
-        
-        /* Style for buttons when not connected */
-        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
-    </style>
+    <title>Magic Remote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <style>
+        body { background-color: #2c3e50; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { color: white; margin-bottom: 20px; font-size: 24px; }
+        button { width: 85%; padding: 20px; margin: 8px; font-size: 20px; border-radius: 8px; border: none; cursor: pointer; background-color: #34495e; color: white; font-weight: bold;}
+        button:active { background-color: #e74c3c; transform: scale(0.95); }
+        .reset { background-color: #27ae60; margin-top: 20px; }
+        #status-display { color: #bdc3c7; margin-top: 20px; font-size: 14px; text-align: center; padding: 10px; border: 1px solid #34495e; border-radius: 5px; width: 85%; }
+        .disabled-remote-button { opacity: 0.6; cursor: not-allowed; }
+    </style>
 </head>
 <body>
-    <h1>SECRET CONTROLLER</h1>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
-        <button onclick="sendSignal(1)">1</button>
-        <button onclick="sendSignal(2)">2</button>
-        <button onclick="sendSignal(3)">3</button>
-        <button onclick="sendSignal(4)">4</button>
-        <button onclick="sendSignal(5)">5</button>
-        <button onclick="sendSignal(6)">6</button>
-    </div>
-    <button class="reset" style="width: 90%" onclick="sendSignal(0)">RESET TO RANDOM</button>
-    
-    <!-- Status display shows connection status and next expected roll -->
-    <div id="status-display">Connecting</div>
+    <h1>SECRET CONTROLLER</h1>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%;">
+        <button onclick="sendSignal(1)">1</button>
+        <button onclick="sendSignal(2)">2</button>
+        <button onclick="sendSignal(3)">3</button>
+        <button onclick="sendSignal(4)">4</button>
+        <button onclick="sendSignal(5)">5</button>
+        <button onclick="sendSignal(6)">6</button>
+    </div>
+    <button class="reset" style="width: 90%" onclick="sendSignal(0)">RESET TO RANDOM</button>
+    
+    <div id="status-display">Connecting</div>
 
-    <script>
-        // --- PASTE KEYS HERE ---
-        const pubnub = new PubNub({
-            publishKey: 'pub-c-09ec4f60-cca1-47ec-9dee-dcc14a623940',
-            subscribeKey: 'sub-c-8994b067-0c4c-43ea-91b3-da68aac9fce1',
-            uuid: PubNub.generateUUID()
-        });
-        const channel = 'magic_dice_channel'; // Channel to send signals to the dice app
-        
-        let isConnected = false;
-        // Tracks the last forced outcome (0 means random)
-        let lastForcedOutcome = 0; 
+    <script>
+        // VAŠE OVĚŘENÉ KLÍČE
+        const pubnub = new PubNub({
+            publishKey: 'pub-c-09ec4f60-cca1-47ec-9dee-dcc14a623940',
+            subscribeKey: 'sub-c-8994b067-0c4c-43ea-91b3-da68aac9fce1',
+            uuid: PubNub.generateUUID()
+        });
+        
+        // Kanál pro odesílání signálu Kostce
+        const channel = 'magic_dice_channel'; 
+        
+        let isConnected = false;
+        let lastForcedOutcome = 0; 
 
-        const statusDiv = document.getElementById('status-display');
-        const allButtons = document.querySelectorAll('button');
+        const statusDiv = document.getElementById('status-display');
+        const allButtons = document.querySelectorAll('button');
 
-        // --- STATUS DISPLAY FUNCTION ---
-        function getStatusText() {
-            let connectionStatus = isConnected ? "Connected" : "Connecting";
-            let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
-            
-            // Combined status (English for this file)
-            return connectionStatus + " (Next Roll: " + outcomeText + ")";
-        }
+        // Funkce pro aktualizaci textu stavu
+        function getStatusText() {
+            let connectionStatus = isConnected ? "Connected" : "Connecting";
+            let outcomeText = lastForcedOutcome === 0 ? "RANDOM" : lastForcedOutcome;
+            return connectionStatus + " (Next Roll: " + outcomeText + ")";
+        }
 
-        // --- CONNECTION MANAGEMENT FUNCTIONS ---
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            statusDiv.innerText = getStatusText();
 
-        function updateConnectionStatus(connected) {
-            isConnected = connected;
-            statusDiv.innerText = getStatusText();
+            if (connected) {
+                // Povolit tlačítka
+                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
+            } else {
+                // Vizuálně zablokovat tlačítka
+                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
+            }
+        }
 
-            if (connected) {
-                // Enable buttons
-                allButtons.forEach(btn => btn.classList.remove('disabled-remote-button'));
-            } else {
-                // Disable buttons visually
-                allButtons.forEach(btn => btn.classList.add('disabled-remote-button'));
-            }
-        }
+        // Automatický pokus o reconnect
+        function checkConnectionAndReconnect() {
+            if (!isConnected) {
+                pubnub.reconnect();
+            }
+        }
 
-        // Checks every second and attempts reconnect if disconnected
-        function checkConnectionAndReconnect() {
-            if (!isConnected) {
-                pubnub.reconnect();
-            }
-        }
+        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
+        
+        // PubNub Listener
+        pubnub.subscribe({ channels: [channel] });
+        pubnub.addListener({
+            status: function(s) { 
+                const category = s.category;
+                if (category.includes("Connected") || category.includes("Restored")) {
+                    updateConnectionStatus(true);
+                } else if (category.includes("Disconnected") || category.includes("NetworkDown")) {
+                    updateConnectionStatus(false);
+                }
+            }
+        });
+        
+        // Funkce pro odeslání signálu
+        function sendSignal(num) {
+            if (!isConnected) {
+                return; 
+            }
+            
+            pubnub.publish({ channel: channel, message: { forceVal: num } }, 
+                function(status, response) {
+                    if(!status.error) {
+                        lastForcedOutcome = num;
+                        statusDiv.innerText = getStatusText();
+                    } else {
+                        console.error("Error sending signal:", status);
+                    }
+                }
+            );
+        }
 
-        // Using a reliable 1-second interval for retries
-        const connectionInterval = setInterval(checkConnectionAndReconnect, 1000);
-        
-        // --- PUBNUB LISTENER ---
-        
-        pubnub.subscribe({ channels: [channel] });
-        pubnub.addListener({
-            status: function(s) { 
-                const category = s.category;
-
-                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
-                    updateConnectionStatus(true);
-                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
-                    updateConnectionStatus(false);
-                }
-            }
-        });
-        
-        // --- SEND SIGNAL FUNCTION ---
-
-        function sendSignal(num) {
-            if (!isConnected) {
-                return; // Prevent sending if not connected
-            }
-            
-            pubnub.publish({ channel: channel, message: { forceVal: num } }, 
-                function(status, response) {
-                    if(!status.error) {
-                        // Update the tracking variable and the display window
-                        lastForcedOutcome = num;
-                        statusDiv.innerText = getStatusText();
-                    } else {
-                        console.error("Error sending signal:", status);
-                    }
-                }
-            );
-        }
-
-        // Initialize display with current status
-        updateConnectionStatus(false);
-    </script>
+        // Inicializace stavu
+        updateConnectionStatus(false);
+    </script>
 </body>
 </html>
-
