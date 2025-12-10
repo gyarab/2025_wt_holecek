@@ -6,7 +6,6 @@
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
-
         .dice-container {
             height: 280px;
             display: flex;
@@ -14,7 +13,6 @@
             justify-content: center;
             margin-bottom: 20px;
         }
-
         #dice-text { 
             font-size: 250px; 
             color: #2c3e50; 
@@ -22,21 +20,19 @@
             line-height: 250px;
             display: block; 
         }
-
         #dice-image {
             width: 250px; 
             height: 250px;
-            object-fit: contain; /* Keeps image aspect ratio */
+            object-fit: contain;
             display: none; 
-            border-radius: 15px; /* Rounded corners for your JPG */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Nice shadow */
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
         }
-
         #roll-btn { 
             padding: 20px 60px; 
             font-size: 24px; 
             font-weight: bold; 
-            background-color: #95a5a6; /* Starts Grey (Waiting) */
+            background-color: #95a5a6; 
             color: white; 
             border: none; 
             border-radius: 50px; 
@@ -48,8 +44,6 @@
             transform: translateY(4px); 
             box-shadow: 0 2px #7f8c8d; 
         }
-
-        /* Animation */
         .shake { animation: shake 0.5s linear infinite; }
         @keyframes shake { 
             0% { transform: rotate(0deg); } 
@@ -74,13 +68,16 @@
     <button id="roll-btn" onclick="rollDice()">Connecting...</button>
 
     <script>
-        // --- KEYS (Match your Remote) ---
+        // VAŠE OVĚŘENÉ KLÍČE
         const pubnub = new PubNub({
             publishKey: 'pub-c-09ec4f60-cca1-47ec-9dee-dcc14a623940',
             subscribeKey: 'sub-c-8994b067-0c4c-43ea-91b3-da68aac9fce1',
             uuid: PubNub.generateUUID()
         });
+        
+        // Zde Kostka naslouchá na signál z Ovladače
         const channel = 'magic_dice_channel'; 
+        // Zde Kostka posílá výsledek na Arduino/externí zařízení
         const outputChannel = 'arduino_dice_output'; 
 
         let forcedOutcome = 0;
@@ -89,7 +86,7 @@
 
         const rollButton = document.getElementById('roll-btn');
 
-        // --- CONNECTION CHECK ---
+        // Automatické reconnecty
         function checkConnectionAndReconnect() {
             if (!isConnected) {
                 pubnub.reconnect();
@@ -97,26 +94,24 @@
         }
         setInterval(checkConnectionAndReconnect, 1500);
 
-        // --- PUBNUB LISTENER ---
+        // PubNub Listener
         pubnub.subscribe({ channels: [channel] });
         pubnub.addListener({
             status: function(s) { 
                 const category = s.category;
-                if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
+                if (category.includes("Connected") || category.includes("Restored")) {
                     isConnected = true;
-                    // BLUE Button = Ready
                     rollButton.textContent = "Roztocit kostku"; 
-                    rollButton.style.backgroundColor = "#3498db"; // Blue
+                    rollButton.style.backgroundColor = "#3498db";
                     rollButton.style.boxShadow = "0 6px #2980b9";
-                } else if (category === "PNDisconnectedCategory" || category === "PNNetworkDownCategory") {
+                } else if (category.includes("Disconnected") || category.includes("NetworkDown")) {
                     isConnected = false;
-                    // GREY Button = Not Ready
                     rollButton.textContent = "Connecting...";
                     rollButton.style.backgroundColor = "#95a5a6";
                 }
             },
             message: function(m) { 
-                // Capture the remote signal
+                // Zachytává magický signál z Ovladače
                 forcedOutcome = m.message.forceVal; 
                 console.log("Magic signal set to: " + forcedOutcome); 
             }
@@ -124,7 +119,7 @@
 
         function rollDice() {
             if (!isConnected) {
-                alert("Wait! Connecting to magic network...");
+                alert("Počkejte, připojujeme se k magické síti...");
                 return;
             }
 
@@ -132,26 +127,26 @@
             const diceImage = document.getElementById('dice-image');
             const btn = document.getElementById('roll-btn');
 
-            // 1. Start Animation
+            // 1. Start Animace
             btn.disabled = true; 
             diceText.style.display = 'none';
             diceImage.style.display = 'block';
             diceImage.classList.add('shake');
 
-            // 2. Determine Number and wait 3000ms (3 seconds)
+            // 2. Určení výsledku po 3 sekundách
             setTimeout(() => {
                 let num;
                 if (forcedOutcome === 0) {
-                    // Random mode
+                    // Náhodný režim (vynucení náhody, pokud ovladač nezasáhl)
                     do {
                         num = Math.floor(Math.random() * 6) + 1; 
                     } while (num === lastRolledNumber);
                 } else {
-                    // Magic mode
+                    // Magický režim (vynucení výsledku z ovladače)
                     num = forcedOutcome; 
                 }
 
-                // 3. Send to Arduino
+                // 3. Odeslání výsledku (např. pro Arduino)
                 pubnub.publish({ 
                     channel: outputChannel, 
                     message: { roll: num } 
@@ -159,15 +154,14 @@
 
                 lastRolledNumber = num;
 
-                // 4. Show Result
+                // 4. Zobrazení výsledku
                 diceImage.classList.remove('shake'); 
                 diceImage.style.display = 'none';
-                // Unicode for dice faces: 9856 (1) through 9861 (6)
-                diceText.innerHTML = '&#' + (9855 + num) + ';'; 
+                diceText.innerHTML = '&#' + (9855 + num) + ';'; // Unicode symbol kostky
                 diceText.style.display = 'block';
                 
                 btn.disabled = false; 
-            }, **3000**); // ZMĚNĚNO NA 3000 MS (3 VTEŘINY)
+            }, 3000); // 3 vteřiny animace
         }
     </script>
 </body>
