@@ -104,7 +104,7 @@
                 const category = s.category;
                 if (category === "PNConnectedCategory" || category === "PNReconnectedCategory" || category === "PNConnectionRestoredCategory") {
                     isConnected = true;
-                    // GREEN Button = Ready
+                    // BLUE Button = Ready
                     rollButton.textContent = "Roztocit kostku"; 
                     rollButton.style.backgroundColor = "#3498db"; // Blue
                     rollButton.style.boxShadow = "0 6px #2980b9";
@@ -138,7 +138,7 @@
             diceImage.style.display = 'block';
             diceImage.classList.add('shake');
 
-            // 2. Determine Number
+            // 2. Determine Number and wait 3000ms (3 seconds)
             setTimeout(() => {
                 let num;
                 if (forcedOutcome === 0) {
@@ -162,11 +162,12 @@
                 // 4. Show Result
                 diceImage.classList.remove('shake'); 
                 diceImage.style.display = 'none';
-                diceText.innerHTML = '&#' + (9855 + num) + ';';
+                // Unicode for dice faces: 9856 (1) through 9861 (6)
+                diceText.innerHTML = '&#' + (9855 + num) + ';'; 
                 diceText.style.display = 'block';
                 
                 btn.disabled = false; 
-            }, 500); // 0.5 seconds shaking
+            }, **3000**); // ZMĚNĚNO NA 3000 MS (3 VTEŘINY)
         }
     </script>
 </body>
