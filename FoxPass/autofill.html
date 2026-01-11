@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FoxPass Autofill</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="autofill-window">
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="logo-area">
+                <img src="icon.png" alt="FoxPass Logo" class="logo-image">
+                <h1>FoxPass <span class="pro-badge">PRO</span></h1>
+            </div>
+            
+            <div class="header-actions">
+                 <button id="btn-theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+            </div>
+        </header>
 
+        <main style="display:flex; flex-direction:column; justify-content:center;">
+            
+            <div id="unlock-section">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div style="font-size:40px; margin-bottom:10px;">🔐</div>
+                    <h2 style="margin:0; font-size:18px;">Authentication Required</h2>
+                    <p style="color:var(--text-muted); font-size:13px; margin-top:5px;">
+                        For domain: <strong id="target-domain" style="color:var(--primary);">...</strong>
+                    </p>
+                </div>
+
+                <div class="input-group">
+                    <label>Your Email</label>
+                    <input type="email" id="user-email" placeholder="email@example.com">
+                </div>
+
+                <div class="input-group">
+                    <label>Master Password</label>
+                    <input type="password" id="master-password" placeholder="••••••••••••" autofocus>
+                </div>
+                
+                <button id="btn-unlock" class="btn btn-primary" style="margin-top:10px;">Unlock & Fill</button>
+                <p id="error-msg" class="error-text"></p>
+            </div>
+
+            <div id="select-section" class="hidden">
+                <h3 style="text-align:center; margin-bottom:20px;">Select Account</h3>
+                <div id="accounts-list"></div>
+                <button id="btn-back-select" class="btn btn-secondary" style="margin-top:20px;">← Back</button>
+            </div>
+
+            <div id="fill-section" class="hidden">
+                <h3 style="text-align:center; margin-bottom:5px;">Confirm Details</h3>
+                <p style="text-align:center; color:var(--text-muted); font-size:12px; margin-bottom:20px;">
+                    Review before filling into the page.
+                </p>
+                
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" id="final-user" class="preview-input">
+                </div>
+
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <div style="position:relative;">
+                        <input type="password" id="final-pass" class="preview-input">
+                        <button id="toggle-preview-pass" class="icon-btn" style="position:absolute; right:5px; top:5px; height:auto;">👁️</button>
+                    </div>
+                </div>
+
+                <button id="btn-fill-now" class="btn btn-primary" style="margin-top:10px;">⚡ Fill Page</button>
+                <button id="btn-back-fill" class="btn btn-secondary" style="margin-top:10px;">Back</button>
+            </div>
+
+        </main>
+    </div>
+    <script src="autofill.js"></script>
+</body>
+</html>
