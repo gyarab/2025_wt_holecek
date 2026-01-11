@@ -1,1 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxPass Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="main-popup">
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="logo-area">
+                <img src="icon.png" alt="FoxPass Logo" class="logo-image">
+                <h1>FoxPass <span class="pro-badge">PRO</span></h1>
+            </div>
+            
+            <div class="header-actions">
+                 <button id="btn-check-inbox" class="icon-btn hidden" title="Inbox">📨</button>
+                 <button id="btn-theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+                 <button id="btn-settings" class="icon-btn hidden" title="Settings">⚙️</button>
+                 <button id="btn-lock-header" class="icon-btn hidden" title="Lock Vault">🔒</button>
+            </div>
+        </header>
+        
+        <main>
+            <div id="auth-screen" class="screen">
+                <div style="margin-top: 10px; text-align: center; margin-bottom: 20px;">
+                    <h2 id="auth-title" style="margin:0; font-size: 18px;">Welcome Back</h2>
+                    <p class="subtitle" id="auth-subtitle" style="color:var(--text-muted); margin-top:5px; font-size: 13px;">Your Digital Fortress</p>
+                </div>
+                
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="user-email" placeholder="name@example.com">
+                </div>
 
+                <div class="input-group">
+                    <label>Master Password</label>
+                    <input type="password" id="master-password" placeholder="••••••••••••">
+                </div>
+
+                <div class="input-group hidden" id="group-confirm">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Repeat password">
+                </div>
+                
+                <button id="btn-submit" class="btn btn-primary" style="margin-top:15px;">
+                    Unlock Vault
+                </button>
+                
+                <p id="error-msg" class="error-text"></p>
+
+                <div style="text-align:center; margin-top:15px;">
+                    <button id="btn-switch-mode" class="btn btn-secondary" style="font-size:11px; width:auto; display:inline-block; padding: 8px 12px;">Create New Account</button>
+                </div>
+            </div>
+
+            <div id="vault-screen" class="screen hidden">
+                
+                <div class="input-group">
+                    <input type="text" id="search-input" placeholder="🔍 Search passwords...">
+                </div>
+
+                <section class="add-new-section" style="background:var(--bg-card); border:1px dashed var(--border); border-radius:var(--radius); padding:15px; margin-bottom:20px;">
+                    <div style="font-size:11px; color:var(--primary); font-weight:700; text-transform:uppercase; margin-bottom:10px;">Add New Entry</div>
+                    
+                    <div class="input-group">
+                        <input type="text" id="site-name" placeholder="Website (e.g. facebook.com)">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="site-username" placeholder="Username / Email">
+                    </div>
+                    
+                    <div class="input-group" style="position:relative; margin-bottom: 5px;">
+                        <input type="password" id="site-password" placeholder="Password">
+                        <button id="btn-generate" class="gen-btn" title="Generate Strong Password">🎲</button>
+                    </div>
+                    <div class="strength-container">
+                        <div id="strength-bar" class="strength-bar"></div>
+                    </div>
+                    <div id="strength-text" class="strength-text"></div>
+
+                    <div class="input-group" style="margin-top: 10px;">
+                        <textarea id="site-note" placeholder="Secure Note (optional)..."></textarea>
+                    </div>
+
+                    <button id="btn-add" class="btn btn-primary" style="margin-top: 10px;">Save to Vault</button>
+                </section>
+                
+                <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:10px;">Saved Accounts</div>
+                
+                <div id="empty-state" class="hidden" style="text-align:center; margin-top:30px; opacity:0.5;">
+                    <div style="font-size:40px; margin-bottom:10px;">💾</div>
+                    <p>No passwords yet.</p>
+                </div>
+                
+                <div id="password-list"></div>
+            </div>
+
+            <div id="settings-screen" class="screen hidden">
+                <h3 style="margin-bottom:20px; text-align:center;">Account Settings</h3>
+                
+                <div style="background:var(--bg-card); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:20px; text-align:center;">
+                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Logged in as</div>
+                    <div id="settings-email" style="color:var(--primary); font-family:monospace; margin-top:5px; font-weight:bold;">user@example.com</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Auto-Lock Timer</label>
+                    <select id="settings-timeout">
+                        <option value="60000">1 Minute</option>
+                        <option value="300000" selected>5 Minutes</option>
+                        <option value="1800000">30 Minutes</option>
+                        <option value="0">Never (Until Browser Close)</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
+                    <label>Backup & Restore</label>
+                    <div style="display:flex; gap:10px;">
+                        <button id="btn-export" class="btn btn-secondary">📥 Export</button>
+                        <button id="btn-import" class="btn btn-secondary">📤 Import</button>
+                    </div>
+                    <input type="file" id="import-file" accept=".json" style="display:none">
+                </div>
+
+                <div class="input-group" style="border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
+                    <label>Change Master Password</label>
+                    <input type="password" id="change-old-pass" placeholder="Old Password" style="margin-bottom:10px;">
+                    <input type="password" id="change-new-pass" placeholder="New Password">
+                    <button id="btn-change-pass" class="btn btn-secondary" style="margin-top:10px;">Update Password</button>
+                </div>
+
+                <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px;">
+                    <label style="color:var(--danger);">Danger Zone</label>
+                    <button id="btn-delete-account" class="btn btn-danger" style="margin-top:10px;">
+                        Delete Account & Data
+                    </button>
+                </div>
+
+                <button id="btn-back-settings" class="btn btn-secondary" style="margin-top:20px;">
+                    ← Back
+                </button>
+            </div>
+
+        </main>
+        
+        <div id="toast" class="toast hidden">Message</div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
