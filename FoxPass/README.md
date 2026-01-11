@@ -1,6 +1,8 @@
-# FoxPass Pro
+# FoxPass Pro 🦊
 
-School year project. A secure password manager extension coming soon to the Firefox Add-ons Store.
+School year project. A secure password manager extension.
+
+👉 **[Available on Firefox Add-ons Store](https://addons.mozilla.org/cs/firefox/addon/foxpass-pro/)**
 
 **Services Used:**
 * **Supabase** (Backend database)
