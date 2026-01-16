@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxPass Pro - Test Lab</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            color: #1f2937;
+        }
+
+        h1 { margin-bottom: 40px; color: #111827; }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 350px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #374151;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box; 
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover { background-color: #1d4ed8; }
+        
+        .note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 15px;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed #d1d5db;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧪 FoxPass Test Lab</h1>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2>🔐 Login</h2>
+            <form action="#" onsubmit="alert('Sent!'); return false;">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" name="email" placeholder="john@doe.com" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+            <div class="note">
+                <strong>Test:</strong> The fox icon should appear in both fields. Clicking it should prompt for autofill.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 Sign Up</h2>
+            <form action="#" onsubmit="alert('Registration sent!'); return false;">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" name="fullname" placeholder="John Doe" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" name="email" placeholder="john@doe.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="reg-pass">New Password</label>
+                    <input type="password" id="reg-pass" name="new-password" autocomplete="new-password">
+                </div>
+                <button type="submit">Create Account</button>
+            </form>
+            <div class="note">
+                <strong>Test:</strong> Try generating a new password here or saving a new entry to the vault.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 Change Password</h2>
+            <form action="#" onsubmit="alert('Password changed!'); return false;">
+                <div class="form-group">
+                    <label for="old-pass">Old Password</label>
+                    <input type="password" id="old-pass" name="old-password">
+                </div>
+                <div class="form-group">
+                    <label for="new-pass-1">New Password</label>
+                    <input type="password" id="new-pass-1" name="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="new-pass-2">Confirm Password</label>
+                    <input type="password" id="new-pass-2" name="confirm-password">
+                </div>
+                <button type="submit">Update Password</button>
+            </form>
+            <div class="note">
+                <strong>Test:</strong> Autofill should be smart enough not to fill the old password into the "New Password" field.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
