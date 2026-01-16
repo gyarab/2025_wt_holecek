@@ -12,12 +12,13 @@
         #app .card:last-child {
             margin-top: 15px;
         }
-    </style>
-</head>
+
+        </style>
+    </head>
 
 <body>
     <div class="container pt-5" style="max-width: 600px; padding-bottom: 400px;">
-        <h1 class="text-center my-3">Registrace na meziplanetární výlet</h1>
+        <h1 class="text-center my-3">Registration for Interplanetary Trip</h1>
         <p>
             <a href="https://vuejs.org/guide/introduction" target="_blank">VueJS docs</a> Lorem, ipsum dolor sit amet
             consectetur adipisicing elit. Facilis et harum quaerat voluptates ipsa alias voluptas odit! Quae a suscipit
@@ -29,7 +30,7 @@
                 <form>
                     <div class="mb-3">
                         <label for="name">Jméno astronauta</label>
-                        <input class="form-control" type="text" id="name" v-model="trip.name">
+                        <input class="form-control" type="text" id="name" v-model="trip.name" placeholder="Jan Novák">
                     </div>
                     <div class="mb-3">
                         <label for="planet">Destinace</label>
@@ -40,10 +41,12 @@
                             <option value="Měsíc">Měsíc (pro začátečníky)</option>
                         </select>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="days">Počet dní (min. 1)</label>
                         <input class="form-control" type="number" id="days" v-model.number="trip.days" min="1">
                     </div>
+                    
                     <div class="mb-3">
                         <input class="form-check-input" type="checkbox" id="terms" v-model="trip.accepted">
                         <label class="form-check-label" for="terms">Souhlasím s podmínkami</label>
@@ -82,7 +85,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
     <script>
-        const app = Vue.createApp({
+        const app = Vue.createApp(
             data() {
                 return {
                     trip: {
@@ -91,6 +94,7 @@
                         days: 1, 
                         accepted: false, 
                     }
+                    errors: {}
                 }
             },
             computed: {
@@ -100,6 +104,16 @@
                            this.trip.days >= 1 &&
                            this.trip.accepted
                 },
+                methods: {
+                    validate(){
+                        this.errors = {}
+                        if(this.trip.name.trim() === ''){
+                            this.errors.name = "Jméno je povinné."
+                        }
+                    },
+                    handleForm(){
+                        this.validate()
+                    }
 
                 estimatedPrice() {
                     let basePrice = 0;
@@ -134,4 +148,4 @@
     </script>
 </body>
 
-</html>
+</html> 
