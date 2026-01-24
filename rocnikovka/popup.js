@@ -19,7 +19,7 @@ const inpEmail = document.getElementById("email");
 
 //Kryprografie a šifrování
 async function deriveKey(password, salt) {
-    const enc = new TextEncoder(); //Přepis znaku na bajty
+    const enc = new TextEncoder();//Přepis znaku na bajty
     const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
     return crypto.subtle.deriveKey(
         { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
