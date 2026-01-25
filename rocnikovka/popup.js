@@ -70,3 +70,33 @@ async function fetchUser(email) {
     const data = await res.json();
     return (data && data.length > 0) ? data[0] : null;
 }
+
+//Tlačítko pro přihlášení nebo registraci
+btnSubmit.onclick = async () => {
+    const email = inpEmail.value.trim();
+    const pass = inpPass.value;
+    if (!email || !pass) { msgError.textContent = "Vyplň vše"; return; }//Vymaže prázdné hodnoty
+    btnSubmit.textContent = "Pracuju";
+    msgError.textContent = "";
+    try {
+        if (isRegister) {
+            const existing = await fetchUser(email);
+            if (existing) throw new Error("Username je již použit.");
+            const encryptedData = await encrypt([], pass);//Zašifrování prázdných dat
+            await apiCall("/rest/v1/vaults", "POST", { user_email: email, encrypted_data: encryptedData });//Odeslání dat na Supabase
+            alert("Účet byl vytvořen");
+            toggleMode(); 
+        } else {
+            const record = await fetchUser(email);
+            if (!record) throw new Error("Uživatel nenalezen.");
+            vaultData = await decrypt(record.encrypted_data, pass);//Dešifrování dat
+            masterKey = pass;
+            currentEmail = email;
+            showVault();
+        }
+    } catch (e) {
+        console.error(e);
+        msgError.textContent = isRegister ? "Chyba: " + e.message : "Špatné přihlašovací údaje.";
+    }
+    btnSubmit.textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se";
+};
