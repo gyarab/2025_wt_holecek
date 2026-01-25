@@ -63,3 +63,10 @@ async function apiCall(path, method = "GET", body = null) {
     if (!res.ok) throw new Error(`Chyba serveru: ${res.status}`);
     return res;
 }
+
+//Načtení uživatele podle emailu
+async function fetchUser(email) {
+    const res = await apiCall(`/rest/v1/vaults?user_email=eq.${email}&select=*`, "GET");
+    const data = await res.json();
+    return (data && data.length > 0) ? data[0] : null;
+}
