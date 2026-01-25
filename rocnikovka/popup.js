@@ -26,3 +26,13 @@ async function deriveKey(password, salt) {
         keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
     );
 }
+
+//Zašifrování dat hlavím heslem
+async function encrypt(dataObj, password) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));//Genereace soli
+    const iv = crypto.getRandomValues(new Uint8Array(12));//Generace inicializačního vektoru
+    const key = await deriveKey(password, salt);
+    const enc = new TextEncoder();
+    const encryptedContent = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(JSON.stringify(dataObj)));//Převedení dat na bajty a jejich zašifrování pomocí hesla a vektoru
+    return { salt: Array.from(salt), iv: Array.from(iv), data: Array.from(new Uint8Array(encryptedContent)) };
+}
