@@ -36,3 +36,13 @@ async function encrypt(dataObj, password) {
     const encryptedContent = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(JSON.stringify(dataObj)));//Převedení dat na bajty a jejich zašifrování pomocí hesla a vektoru
     return { salt: Array.from(salt), iv: Array.from(iv), data: Array.from(new Uint8Array(encryptedContent)) };
 }
+
+//Dešifrování dat hlavním heslem
+async function decrypt(encryptedObj, password) {
+    const salt = new Uint8Array(encryptedObj.salt);//Převedení pole čísel na Uint8Array
+    const iv = new Uint8Array(encryptedObj.iv);//Převedení pole čísel na Uint8Array
+    const data = new Uint8Array(encryptedObj.data);//Převedení pole čísel na Uint8Array
+    const key = await deriveKey(password, salt);
+    const decryptedContent = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
+    return JSON.parse(new TextDecoder().decode(decryptedContent));
+}
