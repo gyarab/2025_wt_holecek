@@ -46,3 +46,20 @@ async function decrypt(encryptedObj, password) {
     const decryptedContent = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
     return JSON.parse(new TextDecoder().decode(decryptedContent));
 }
+
+//Supabase 
+async function apiCall(path, method = "GET", body = null) {
+    const options = {
+        method: method,
+        headers: {
+            "apikey": SUPABASE_KEY,//Aurozační klíč pro Supabase
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        }
+    };
+    if (body) options.body = JSON.stringify(body);
+    const res = await fetch(`${SUPABASE_URL}${path}`, options);//Poslání požadavku na Supabase
+    if (!res.ok) throw new Error(`Chyba serveru: ${res.status}`);
+    return res;
+}
