@@ -157,3 +157,9 @@ function renderList() {
         };
     });
 }
+
+//Přepínání mezi režimy a obrazovkami
+function showVault() { elAuth.classList.add("hidden"); elVault.classList.remove("hidden"); document.getElementById("btn-logout").classList.remove("hidden"); renderList(); }//Otevření trezoru
+function toggleMode() { isRegister = !isRegister; document.getElementById("auth-title").textContent = isRegister ? "Registrace" : "Přihlásit se"; document.getElementById("auth-sub").textContent = isRegister ? "Vytvoření nového trezoru" : "Data se stahují ze Supabase"; btnSubmit.textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se"; document.getElementById("toggle-mode").textContent = isRegister ? "Zpět na přihlášení" : "Nemám účet (Registrace)"; msgError.textContent = ""; }//Přepínání mezi režimy přihlášení a registrace
+document.getElementById("toggle-mode").onclick = toggleMode;//Tlačítko pro přepínání režimů
+document.getElementById("btn-logout").onclick = () => location.reload();//Tlačítko pro odhlášení
