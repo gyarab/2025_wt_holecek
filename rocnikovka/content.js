@@ -18,7 +18,6 @@ browser.runtime.onMessage.addListener((msg) => {
                 if ((input.type === "text" || input.type === "email") && 
                     input.value === "" && 
                     input.offsetParent !== null) {
-                    
                     input.value = msg.username;
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                     input.dispatchEvent(new Event('change', { bubbles: true }));
