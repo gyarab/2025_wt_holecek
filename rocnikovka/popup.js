@@ -71,7 +71,7 @@ async function fetchUser(email) {
     return (data && data.length > 0) ? data[0] : null;
 }
 
-//Tlačítko pro přihlášení nebo registraci
+//Tlačítko pro přihlášení a registraci
 btnSubmit.onclick = async () => {
     const email = inpEmail.value.trim();
     const pass = inpPass.value;
@@ -100,3 +100,60 @@ btnSubmit.onclick = async () => {
     }
     btnSubmit.textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se";
 };
+
+//Tlačítko na uložení
+document.getElementById("btn-save").onclick = async () => {
+    const site = document.getElementById("site").value;
+    const login = document.getElementById("login").value;
+    const pass = document.getElementById("pass").value;
+
+    if (!site || !pass) { alert("Vyplň data"); return; }
+
+    loading.classList.remove("hidden");
+    vaultData.push({ site, user: login, pass });//Přidání nových dat do RAM
+
+    try {
+        const encryptedData = await encrypt(vaultData, masterKey);//Zašifrování nových dat
+        await apiCall(`/rest/v1/vaults?user_email=eq.${currentEmail}`, "PATCH", { encrypted_data: encryptedData, updated_at: new Date().toISOString() });//Odeslání dat na Supabase
+        
+        renderList();
+        document.getElementById("site").value = "";
+        document.getElementById("pass").value = "";
+    } catch (e) { alert("Chyba" + e.message); }
+    loading.classList.add("hidden");
+};
+
+//Zobrazení trezoru
+function renderList() {
+    const list = document.getElementById("vault-list");
+    list.innerHTML = "";
+    vaultData.forEach((item, index) => {
+        const div = document.createElement("div");//Vytvoření nového prvku pro každý záznam
+        div.className = "vault-item";
+        div.innerHTML = `
+            <div><strong>${item.site}</strong><br><span style="font-size:11px">${item.user}</span></div>
+            <div>
+                <button class="icon-btn" id="fill-${index}" title="Vyplnit"></button>
+                <button class="icon-btn" id="del-${index}" title="Smazat"></button>
+            </div>`;
+        list.appendChild(div);
+        document.getElementById(`del-${index}`).onclick = async () => {
+            if(!confirm("Smazat?")) return;
+            loading.classList.remove("hidden");
+            vaultData.splice(index, 1);
+            const encryptedData = await encrypt(vaultData, masterKey);
+            await apiCall(`/rest/v1/vaults?user_email=eq.${currentEmail}`, "PATCH", { encrypted_data: encryptedData });
+            loading.classList.add("hidden");
+            renderList();
+        };
+        document.getElementById(`fill-${index}`).onclick = async () => {
+            try {
+                const tabs = await browser.tabs.query({active: true, currentWindow: true});
+                if(tabs[0]) {
+                    await browser.tabs.sendMessage(tabs[0].id, { action: "fill_data", username: item.user, password: item.pass });
+                    window.close();
+                }
+            } catch (err) { console.error(err); }
+        };
+    });
+}
