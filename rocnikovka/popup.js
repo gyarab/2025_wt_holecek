@@ -4,17 +4,17 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 //Proměnné
 let currentEmail = "";
-let isRegistered = false;
+let isRegister = false;
 let vaultData = [];
 let masterKey = null;
 
 //Zkratky pro prvky v HTML
 const inpPass = document.getElementById("password");
-const btnSubmit = document.getElementById("btnSubmit");
-const msgError = document.getElementById("errorMessage");
+const btnSubmit = document.getElementById("btn-submit");
+const msgError = document.getElementById("error-msg");
 const loading = document.getElementById("loading");
-const elAuth = document.getElementById("screenAuth");
-const elVault = document.getElementById("screenVault");
+const elAuth = document.getElementById("screen-auth");
+const elVault = document.getElementById("screen-vault");
 const inpEmail = document.getElementById("email");
 
 //Kryprografie a šifrování
@@ -81,14 +81,14 @@ btnSubmit.onclick = async () => {
     try {
         if (isRegister) {
             const existing = await fetchUser(email);
-            if (existing) throw new Error("Username je již použit.");
+            if (existing) throw new Error("Username je již použit");
             const encryptedData = await encrypt([], pass);//Zašifrování prázdných dat
             await apiCall("/rest/v1/vaults", "POST", { user_email: email, encrypted_data: encryptedData });//Odeslání dat na Supabase
             alert("Účet byl vytvořen");
             toggleMode(); 
         } else {
             const record = await fetchUser(email);
-            if (!record) throw new Error("Uživatel nenalezen.");
+            if (!record) throw new Error("Uživatel nenalezen");
             vaultData = await decrypt(record.encrypted_data, pass);//Dešifrování dat
             masterKey = pass;
             currentEmail = email;
@@ -96,7 +96,7 @@ btnSubmit.onclick = async () => {
         }
     } catch (e) {
         console.error(e);
-        msgError.textContent = isRegister ? "Chyba: " + e.message : "Špatné přihlašovací údaje.";
+        msgError.textContent = isRegister ? "Chyba: " + e.message : "Špatné přihlašovací údaje";
     }
     btnSubmit.textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se";
 };
@@ -138,7 +138,7 @@ function renderList() {
             </div>`;
         list.appendChild(div);
         document.getElementById(`del-${index}`).onclick = async () => {
-            if(!confirm("Smazat?")) return;
+            if(!confirm("Smazat")) return;
             loading.classList.remove("hidden");
             vaultData.splice(index, 1);
             const encryptedData = await encrypt(vaultData, masterKey);
