@@ -107,7 +107,7 @@ document.getElementById("btn-save").onclick = async () => {
     const login = document.getElementById("login").value;
     const pass = document.getElementById("pass").value;
 
-    if (!site || !pass) { alert("Vyplň data"); return; }
+    if (!site || !pass) { alert("Vyplňte data"); return; }
 
     loading.classList.remove("hidden");
     vaultData.push({ site, user: login, pass });//Přidání nových dat do RAM
@@ -118,12 +118,13 @@ document.getElementById("btn-save").onclick = async () => {
         
         renderList();
         document.getElementById("site").value = "";
+        document.getElementById("login").value = "";
         document.getElementById("pass").value = "";
     } catch (e) { alert("Chyba" + e.message); }
     loading.classList.add("hidden");
 };
 
-//Zobrazení trezoru
+//Zobrazení trezoru s upraveným hezkým UI
 function renderList() {
     const list = document.getElementById("vault-list");
     list.innerHTML = "";
@@ -131,12 +132,16 @@ function renderList() {
         const div = document.createElement("div");//Vytvoření nového prvku pro každý záznam
         div.className = "vault-item";
         div.innerHTML = `
-            <div><strong>${item.site}</strong><br><span style="font-size:11px">${item.user}</span></div>
-            <div>
+            <div class="vault-info">
+                <strong>${item.site}</strong>
+                <span>${item.user}</span>
+            </div>
+            <div class="vault-actions">
                 <button class="icon-btn" id="fill-${index}" title="Vyplnit"></button>
                 <button class="icon-btn" id="del-${index}" title="Smazat"></button>
             </div>`;
         list.appendChild(div);
+        
         document.getElementById(`del-${index}`).onclick = async () => {
             if(!confirm("Smazat")) return;
             loading.classList.remove("hidden");
@@ -146,6 +151,7 @@ function renderList() {
             loading.classList.add("hidden");
             renderList();
         };
+        
         document.getElementById(`fill-${index}`).onclick = async () => {
             try {
                 const tabs = await browser.tabs.query({active: true, currentWindow: true});
@@ -163,3 +169,23 @@ function showVault() { elAuth.classList.add("hidden"); elVault.classList.remove(
 function toggleMode() { isRegister = !isRegister; document.getElementById("auth-title").textContent = isRegister ? "Registrace" : "Přihlásit se"; document.getElementById("auth-sub").textContent = isRegister ? "Vytvoření nového trezoru" : "Data se stahují ze Supabase"; btnSubmit.textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se"; document.getElementById("toggle-mode").textContent = isRegister ? "Zpět na přihlášení" : "Nemám účet (Registrace)"; msgError.textContent = ""; }//Přepínání mezi režimy přihlášení a registrace
 document.getElementById("toggle-mode").onclick = toggleMode;//Tlačítko pro přepínání režimů
 document.getElementById("btn-logout").onclick = () => location.reload();//Tlačítko pro odhlášení
+
+const btnTheme = document.getElementById("btn-theme");
+
+// Načtení uloženého motivu z localStorage po otevření okna
+if (localStorage.getItem("foxpass_theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    btnTheme.textContent = "☀️";
+}
+
+// Kliknutí na přepínač
+btnTheme.onclick = () => {
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem("foxpass_theme", "dark");
+        btnTheme.textContent = "☀️";
+    } else {
+        localStorage.setItem("foxpass_theme", "light");
+        btnTheme.textContent = "🌙";
+    }
+};

@@ -11,33 +11,38 @@
     <div class="app-container">
         <header>
             <h1>FoxPass <span class="badge"></span></h1>
-            <button id="btn-logout" class="hidden" title="Odhlásit"></button>
+            <div class="header-actions">
+                <button id="btn-theme" class="header-btn" title="Přepnout motiv"></button>
+                <button id="btn-logout" class="hidden header-btn" title="Odhlásit"></button>
+            </div>
         </header>
+        
         <div id="screen-auth">
             <h3 id="auth-title">Přihlášení</h3>
-            <p class="subtitle" id="auth-sub">stahování dat</p>
+            <p class="subtitle" id="auth-sub">Stahování dat</p>
             <div class="input-group">
                 <input type="email" id="email" placeholder="email">
             </div>
             <div class="input-group">
                 <input type="password" id="password" placeholder="heslo">
             </div>
-            <button id="btn-submit" class="btn btn-primary">přihlášení</button>
+            <button id="btn-submit" class="btn btn-primary">Přihlášení</button>
             <div id="error-msg" class="error"></div>          
             <p class="switch-link">
-                <a href="#" id="toggle-mode">registrace</a>
+                <a href="#" id="toggle-mode">Registrace</a>
             </p>
         </div>
 
-        <div id="screen-vault" class="hidden">
+        <div id="screen-vault" class="hidden vault-container">
             <div class="add-box">
-                <input type="text" id="site" placeholder="Web (např. facebook.com)">
+                <input type="text" id="site" placeholder="Web (např. gyarab.cz)">
                 <input type="text" id="login" placeholder="Jméno / Email">
                 <input type="password" id="pass" placeholder="Heslo">
-                <button id="btn-save" class="btn btn-secondary">uložit na cloud</button>
+                <button id="btn-save" class="btn btn-secondary">Uložit na cloud</button>
             </div>
-            <h3 class="list-title">hesla</h3>
-            <div id="loading" class="hidden">synchronizace</div>
+            <h3 class="list-title">Hesla</h3>
+            <div id="loading" class="hidden">Synchronizace...</div>
+            
             <div id="vault-list"></div>
         </div>
     </div>

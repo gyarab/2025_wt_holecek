@@ -1,41 +1,168 @@
+/* Definice barev pro světlý a tmavý režim */
+:root {
+    --bg-color: #f8fafc;
+    --text-color: #334155;
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --secondary-bg: #e2e8f0;
+    --secondary-text: #334155;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --item-bg: #ffffff;
+    --item-border: #e2e8f0;
+    --error-color: #ef4444;
+    --subtitle-color: #64748b;
+}
+
+body.dark-mode {
+    --bg-color: #0f172a;
+    --text-color: #f8fafc;
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-bg: #1e293b;
+    --secondary-text: #f8fafc;
+    --input-bg: #1e293b;
+    --input-border: #334155;
+    --item-bg: #1e293b;
+    --item-border: #334155;
+    --error-color: #f87171;
+    --subtitle-color: #94a3b8;
+}
+
 html, body {
     width: 350px;
     height: 500px;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* Zabrání scrollování celého rozšíření */
 }
 
 body { 
-    font-family: sans-serif; 
-    background: #f8fafc; 
-    color: #334155; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text-color); 
+    transition: background 0.3s, color 0.3s;
 }
 
 .app-container { 
     width: 100%; 
     height: 100%; 
-    padding: 15px; 
+    padding: 20px; 
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column; 
 }
 
-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-h1 { font-size: 18px; margin: 0; color: #4f46e5; }
-.badge { background: gold; color: black; font-size: 10px; padding: 2px 5px; border-radius: 4px; vertical-align: middle; }
+header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+
+h1 { font-size: 22px; margin: 0; color: var(--primary-color); font-weight: bold;}
+.badge { background: #fbbf24; color: #000; font-size: 10px; padding: 2px 5px; border-radius: 4px; vertical-align: middle; }
 .hidden { display: none !important; }
 
-input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-input:focus { outline: 2px solid #4f46e5; }
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+    background: var(--secondary-bg);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--secondary-text);
+    transition: transform 0.2s, background 0.3s;
+}
+.header-btn:hover { transform: scale(1.1); }
 
-.btn { width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; }
-.btn-primary { background: #4f46e5; color: white; }
-.btn-secondary { background: #e2e8f0; color: #334155; }
+input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 10px; 
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--input-border); 
+    border-radius: 8px; 
+    box-sizing: border-box; 
+    transition: border-color 0.2s, background 0.3s, color 0.3s;
+}
+input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
 
-.error { color: #ef4444; font-size: 12px; margin-top: 5px; text-align: center; height: 15px;}
-.switch-link { text-align: center; margin-top: 15px; font-size: 12px; }
+.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: background 0.2s, transform 0.1s; }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); }
 
-.vault-item { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-.icon-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 5px; }
-.icon-btn:hover { transform: scale(1.2); }
+.error { color: var(--error-color); font-size: 13px; margin-top: 5px; text-align: center; min-height: 16px; font-weight: 500;}
+.subtitle { font-size: 13px; color: var(--subtitle-color); margin-top: -8px; margin-bottom: 20px; }
+.switch-link { text-align: center; margin-top: 15px; font-size: 13px; }
+.switch-link a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
+
+.add-box {
+    background: var(--item-bg);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--item-border);
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.list-title { margin: 0 0 10px 0; font-size: 12px; color: var(--subtitle-color); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Flexbox logika pro scrollování trezoru */
+.vault-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#vault-list {
+    flex-grow: 1;
+    overflow-y: auto; /* Aktivuje scrollování */
+    padding-right: 5px;
+    margin-bottom: 10px;
+}
+
+/* Vlastní vzhled posuvníku */
+#vault-list::-webkit-scrollbar { width: 6px; }
+#vault-list::-webkit-scrollbar-track { background: transparent; }
+#vault-list::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 3px; }
+
+.vault-item { 
+    background: var(--item-bg); 
+    border: 1px solid var(--item-border); 
+    padding: 12px; 
+    border-radius: 10px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.vault-item:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+.vault-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+.vault-info strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vault-info span { font-size: 12px; color: var(--subtitle-color); }
+
+.vault-actions { display: flex; gap: 5px; }
+.icon-btn { 
+    background: var(--secondary-bg); 
+    border: none; 
+    border-radius: 6px;
+    cursor: pointer; 
+    font-size: 14px; 
+    padding: 6px 8px; 
+    transition: transform 0.2s, background 0.2s;
+}
+.icon-btn:hover { transform: scale(1.1); background: var(--input-border); }
+
+#loading { text-align: center; font-size: 12px; color: var(--primary-color); font-weight: bold; margin-bottom: 10px;}
