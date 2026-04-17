@@ -42,14 +42,21 @@
             margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
+<<<<<<< HEAD
             min-height: 25px; /* Aby se nerozházel layout při prázdné zprávě */
+=======
+            min-height: 25px; 
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
         }
         #attempts {
             margin: 10px 0;
             font-size: 0.9em;
             color: #555;
         }
+<<<<<<< HEAD
         /* Styly pro barevné hlášky */
+=======
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
         .win {
             color: green;
         }
@@ -74,28 +81,43 @@
     </div>
 
     <script>
+<<<<<<< HEAD
         // Nastavení hry
+=======
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
         const MAX_ATTEMPTS = 7;
         let secretNumber = 0;
         let attempts = 0;
         let gameOver = false;
 
+<<<<<<< HEAD
         // Elementy DOM
+=======
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
         const guessInput = document.getElementById('guessInput');
         const messageDisplay = document.getElementById('message');
         const attemptsDisplay = document.getElementById('attempts');
         const newGameButton = document.getElementById('newGameButton');
 
+<<<<<<< HEAD
         /**
          * Inicializuje novou hru.
          */
         function newGame() {
             // 1. Generuje náhodné číslo 1-100
+=======
+        function newGame() {
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             secretNumber = Math.floor(Math.random() * 100) + 1;
             attempts = 0;
             gameOver = false;
 
+<<<<<<< HEAD
             // Vynulování zobrazení a stavu
+=======
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             messageDisplay.textContent = '';
             messageDisplay.className = '';
             attemptsDisplay.textContent = `Zbývá pokusů: ${MAX_ATTEMPTS}`;
@@ -103,45 +125,72 @@
             guessInput.disabled = false;
             newGameButton.style.display = 'none';
 
+<<<<<<< HEAD
             // Logování do konzole
             console.log('--- Nová hra zahájena ---');
             // Konzole pro ladění a "švindlování"
+=======
+            console.log('--- Nová hra zahájena ---');
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             console.log(`POZOR! Tajné číslo je: ${secretNumber}`);
             console.log(`Maximální počet pokusů: ${MAX_ATTEMPTS}`);
         }
 
+<<<<<<< HEAD
         /**
          * Zpracuje tip uživatele.
          */
         function checkGuess() {
             if (gameOver) {
                 // Předejdeme hře po skončení
+=======
+
+        function checkGuess() {
+            if (gameOver) {
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
                 messageDisplay.textContent = 'Hra skončila. Spusťte prosím novou hru.';
                 messageDisplay.className = 'lose';
                 console.log('Hra již skončila.');
                 return;
             }
 
+<<<<<<< HEAD
             // Přečtení vstupu
             const guess = parseInt(guessInput.value);
 
             // Validace vstupu
+=======
+
+            const guess = parseInt(guessInput.value);
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             if (isNaN(guess) || guess < 1 || guess > 100) {
                 messageDisplay.textContent = 'Prosím zadejte platné číslo mezi 1 a 100.';
                 messageDisplay.className = '';
                 return;
             }
 
+<<<<<<< HEAD
             // Inkremenatace pokusů
             attempts++;
             const attemptsLeft = MAX_ATTEMPTS - attempts;
 
             // Logování tipu
+=======
+
+            attempts++;
+            const attemptsLeft = MAX_ATTEMPTS - attempts;
+
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             console.log(`Pokus č. ${attempts}: Tip uživatele = ${guess}`);
 
             let message = '';
 
             if (guess === secretNumber) {
+<<<<<<< HEAD
                 // VÝHRA
                 message = `🎉 Gratuluji! Uhodl jste číslo ${secretNumber} na ${attempts}. pokus!`;
                 messageDisplay.className = 'win'; // Změna barvy na zelenou
@@ -159,24 +208,57 @@
                 messageDisplay.className = '';
             } else { // guess > secretNumber
                 // Zkuste Menší
+=======
+
+                message = `🎉 Gratuluji! Uhodl jste číslo ${secretNumber} na ${attempts}. pokus!`;
+                messageDisplay.className = 'win'; 
+                gameOver = true;
+                console.log('VÝHRA!');
+            } else if (attempts >= MAX_ATTEMPTS) {
+                message = `❌ Prohrál jste! Vyčerpal jste všechny pokusy. Tajné číslo bylo ${secretNumber}.`;
+                messageDisplay.className = 'lose'; 
+                gameOver = true;
+                console.log('PROHRA - vyčerpány pokusy.');
+            } else if (guess < secretNumber) {
+
+                message = 'Tip je malý. Zkuste **větší** číslo.';
+                messageDisplay.className = '';
+            } else { 
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
                 message = 'Tip je velký. Zkuste **menší** číslo.';
                 messageDisplay.className = '';
             }
 
+<<<<<<< HEAD
             // Aktualizace zobrazení
             messageDisplay.innerHTML = message; // Použijeme innerHTML kvůli boldování
             attemptsDisplay.textContent = `Zbývá pokusů: ${attemptsLeft < 0 ? 0 : attemptsLeft}`;
 
             // Ukončení hry a příprava na novou
+=======
+
+            messageDisplay.innerHTML = message; 
+            attemptsDisplay.textContent = `Zbývá pokusů: ${attemptsLeft < 0 ? 0 : attemptsLeft}`;
+
+
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
             if (gameOver) {
                 guessInput.disabled = true;
                 newGameButton.style.display = 'block';
             }
         }
 
+<<<<<<< HEAD
         // Spuštění první hry při načtení stránky
+=======
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2
         newGame();
     </script>
 
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 6533197c59019c6735b20386b3d94a8031132de2

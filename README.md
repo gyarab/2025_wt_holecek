@@ -1,4 +1,4 @@
-# 2024 WT Holeček
+# 2025 WT Holeček
 
 Toto je pracovní repozitář pro předmět Webové technologie 2.F na Gymnáziu Arabská, školní rok 2025/2026.
 Repozitář obsahuje:

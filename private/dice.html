@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magic WiFi Dice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
+        .dice-container {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #dice-text { 
+            font-size: 250px; 
+            color: #2c3e50; 
+            user-select: none; 
+            line-height: 250px;
+            display: block; 
+        }
+        #dice-image {
+            width: 250px; 
+            height: 250px;
+            object-fit: contain;
+            display: none; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+        #roll-btn { 
+            padding: 20px 60px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            background-color: #95a5a6; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 6px #7f8c8d; 
+            transition: all 0.2s; 
+        }
+        #roll-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 2px #7f8c8d; 
+        }
+        .shake { animation: shake 0.5s linear infinite; }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            50% { transform: rotate(-15deg); } 
+            75% { transform: rotate(5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dice-container">
+        <div id="dice-text">&#9856;</div>
+
+        <img id="dice-image" 
+             src="https://raw.githubusercontent.com/gyarab/2025_wt_holecek/0b85a1066cfb49f8b533804a477d74fec32fddbe/private/img15851-3128377369.jpg" 
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1500/1500427.png'"
+             alt="Rolling...">
+    </div>
+
+    <button id="roll-btn" onclick="rollDice()">Connecting...</button>
+
+    <script>
+        // VAŠE OVĚŘENÉ KLÍČE
+        const pubnub = new PubNub({
+            publishKey: 'pub-c-c1d5c7b7-7467-4989-86a9-42958a2901c5',
+            subscribeKey: 'sub-c-bd13d5e2-ee09-4bbf-b6e5-ad3e7b530f2b',
+            uuid: PubNub.generateUUID()
+        });
+        
+        // Zde Kostka naslouchá na signál z Ovladače
+        const channel = 'magic_dice_channel'; 
+        // Zde Kostka posílá výsledek na Arduino/externí zařízení
+        const outputChannel = 'arduino_dice_output'; 
+
+        let forcedOutcome = 0;
+        let lastRolledNumber = 0; 
+        let isConnected = false;
+
+        const rollButton = document.getElementById('roll-btn');
+
+        // Automatické reconnecty
+        function checkConnectionAndReconnect() {
+            if (!isConnected) {
+                pubnub.reconnect();
+            }
+        }
+        setInterval(checkConnectionAndReconnect, 1500);
+
+        // PubNub Listener
+        pubnub.subscribe({ channels: [channel] });
+        pubnub.addListener({
+            status: function(s) { 
+                const category = s.category;
+                if (category.includes("Connected") || category.includes("Restored")) {
+                    isConnected = true;
+                    rollButton.textContent = "Roztocit kostku"; 
+                    rollButton.style.backgroundColor = "#3498db";
+                    rollButton.style.boxShadow = "0 6px #2980b9";
+                } else if (category.includes("Disconnected") || category.includes("NetworkDown")) {
+                    isConnected = false;
+                    rollButton.textContent = "Connecting...";
+                    rollButton.style.backgroundColor = "#95a5a6";
+                }
+            },
+            message: function(m) { 
+                // Zachytává magický signál z Ovladače
+                forcedOutcome = m.message.forceVal; 
+                console.log("Magic signal set to: " + forcedOutcome); 
+            }
+        });
+
+        function rollDice() {
+            if (!isConnected) {
+                alert("Počkejte, připojujeme se k magické síti...");
+                return;
+            }
+
+            const diceText = document.getElementById('dice-text');
+            const diceImage = document.getElementById('dice-image');
+            const btn = document.getElementById('roll-btn');
+
+            // 1. Start Animace
+            btn.disabled = true; 
+            diceText.style.display = 'none';
+            diceImage.style.display = 'block';
+            diceImage.classList.add('shake');
+
+            // 2. Určení výsledku po 3 sekundách
+            setTimeout(() => {
+                let num;
+                if (forcedOutcome === 0) {
+                    // Náhodný režim (vynucení náhody, pokud ovladač nezasáhl)
+                    do {
+                        num = Math.floor(Math.random() * 6) + 1; 
+                    } while (num === lastRolledNumber);
+                } else {
+                    // Magický režim (vynucení výsledku z ovladače)
+                    num = forcedOutcome; 
+                }
+
+                // 3. Odeslání výsledku (např. pro Arduino)
+                pubnub.publish({ 
+                    channel: outputChannel, 
+                    message: { roll: num } 
+                });
+
+                lastRolledNumber = num;
+
+                // 4. Zobrazení výsledku
+                diceImage.classList.remove('shake'); 
+                diceImage.style.display = 'none';
+                diceText.innerHTML = '&#' + (9855 + num) + ';'; // Unicode symbol kostky
+                diceText.style.display = 'block';
+                
+                btn.disabled = false; 
+            }, 3000); // 3 vteřiny animace
+        }
+    </script>
+</body>
+</html>
