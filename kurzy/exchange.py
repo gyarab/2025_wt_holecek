@@ -1,4 +1,4 @@
-import httpx
+import httpx # type: ignore
 URL = "https://www.cnb.cz/en/financial_markets/foreign_exchange_market/exchange_rate_fixing/daily.txt"
 def get_eur_rate():
     response = httpx.get(URL)
